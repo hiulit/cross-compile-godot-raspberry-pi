@@ -157,7 +157,7 @@ function get_options() {
                 ;;
 #H -gt, --get-tags                      Prints the Godot tags from GitHub (to be used with --godot-versions).
             -gt|--get-tags)
-                curl -sL https://api.github.com/repos/godotengine/godot/tags | jq -r ".[].name"
+                curl -sL https://api.github.com/repos/godotengine/godot/tags | jq -r ".[].name" | grep -E '^[3-9].[1-9]'
                 exit 0
                 ;;
 #H -gc, --get-cpus                      Prints the number of CPUs (to be used with --scons-jobs).
@@ -323,10 +323,10 @@ function get_options() {
                     RASPBERRY_PI_VERSIONS+=("$argument")
                 done
                 ;;
-            # *)
-            #     echo "ERROR: Invalid option '$1'." >&2
-            #     exit 2
-            #     ;;
+            *)
+                echo "ERROR: Invalid option '$1'." >&2
+                exit 2
+                ;;
         esac
         shift
     done
