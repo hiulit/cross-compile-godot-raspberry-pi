@@ -1,0 +1,4 @@
+logs/
+godot/
+arm-godot-linux-gnueabihf_sdk-buildroot/
+compiled-binaries/
