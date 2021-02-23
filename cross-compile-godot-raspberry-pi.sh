@@ -43,6 +43,8 @@ RASPBERRY_PI_VERSIONS=()
 BINARIES_TO_COMPILE=()
 SCONS_JOBS="1"
 USE_LTO="no"
+GCC_VERBOSE="yes"
+
 AUDIO_FIX="no"
 GCC_VERBOSE="no"
 
@@ -468,9 +470,9 @@ function main() {
         ;;
     esac
 
-    # if [[ "$GCC_VERBOSE" == "no" ]]; then
-    #   CCFLAGS+=" -w -fcompare-debug-second"
-    # fi
+    if [[ "$GCC_VERBOSE" == "no" ]]; then
+      CCFLAGS+=" -w -fcompare-debug-second"
+    fi
 
     for godot_version in "${GODOT_VERSIONS[@]}"; do
       cd "$GODOT_SOURCE_FILES_DIR"
