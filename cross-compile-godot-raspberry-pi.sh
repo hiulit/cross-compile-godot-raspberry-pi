@@ -454,6 +454,7 @@ function main() {
   # Concatenate versions and commits.
   GODOT_VERSIONS+=("${GODOT_COMMITS[@]}")
 
+  IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
   for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
     case "$rpi_version" in
       0|1)
@@ -474,6 +475,7 @@ function main() {
       CCFLAGS+=" -w -fcompare-debug-second"
     fi
 
+    IFS=" " read -r -a GODOT_VERSIONS <<< "${GODOT_VERSIONS[@]}"
     for godot_version in "${GODOT_VERSIONS[@]}"; do
       cd "$GODOT_SOURCE_FILES_DIR"
 
@@ -486,6 +488,7 @@ function main() {
         sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
       fi
 
+      IFS=" " read -r -a BINARIES_TO_COMPILE <<< "${BINARIES_TO_COMPILE[@]}"
       for binary_type in "${BINARIES_TO_COMPILE[@]}"; do
         case "$binary_type" in
           "editor")
