@@ -94,6 +94,11 @@ function check_argument() {
 }
 
 
+function version() {
+  echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
+}
+
+
 function set_config() {
   local config_name
   local config_param
@@ -438,7 +443,6 @@ function main() {
   log "Raspberry Pi version/s to compile: ${RASPBERRY_PI_VERSIONS[@]}"
   log "SCons jobs: $SCONS_JOBS"
   log "Use LTO: $USE_LTO"
-  log "Audio fix: $AUDIO_FIX"
   log "GCC verbose: $GCC_VERBOSE"
   log "----------"
   log
@@ -473,6 +477,12 @@ function main() {
 
       log ">> Checking out version $godot_version ..."
       git checkout "$godot_version"
+
+      if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
+        # Apply audio fix. See https://github.com/godotengine/godot/pull/43928.
+        AUDIO_FIX="yes"
+        sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
+      fi
 
       for binary_type in "${BINARIES_TO_COMPILE[@]}"; do
         case "$binary_type" in
@@ -567,6 +577,13 @@ function main() {
         log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.zip'."
         log
       done
+
+      if [[ "$AUDIO_FIX" == "yes" ]]; then
+        # Revert the audio fix to prevent git issues.
+        AUDIO_FIX="no"
+        sed -i "s/int16_t/uint8_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
+      fi
+
     done
   done
 }
