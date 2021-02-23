@@ -46,7 +46,6 @@ USE_LTO="no"
 GCC_VERBOSE="yes"
 
 AUDIO_FIX="no"
-GCC_VERBOSE="no"
 
 CCFLAGS=""
 GODOT_TOOLS=""
@@ -146,7 +145,6 @@ function check_config() {
     config_param="${config_param#\"}"
 
     if [[ -n "$config_param" ]]; then
-      # Assign the config param to the dynamic config name.
       eval "$config_name"="\$config_param"
       # echo "${config_name}"
       # echo "${!config_name}"
@@ -479,7 +477,6 @@ function main() {
     for godot_version in "${GODOT_VERSIONS[@]}"; do
       cd "$GODOT_SOURCE_FILES_DIR"
 
-      log ">> Checking out version $godot_version ..."
       git checkout "$godot_version"
 
       if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
