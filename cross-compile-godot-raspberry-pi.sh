@@ -457,7 +457,7 @@ function main() {
   for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
     case "$rpi_version" in
       0|1)
-        CCFLAGS="-mcpu=arm1176jzf-s -mtune=arm1176jzf-s mfpu=vfp -mfloat-abi=hard -mlittle-endian -munaligned-access"
+        CCFLAGS="-mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mlittle-endian -munaligned-access"
         ;;
       2)
         CCFLAGS="-mcpu=cortex-a7 -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -mlittle-endian -munaligned-access"
