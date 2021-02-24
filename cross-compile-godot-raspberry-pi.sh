@@ -2,16 +2,16 @@
 # cross-compile-godot-raspberry-pi.sh
 
 # Cross-compile Godot for the Raspberry Pi.
-# A script to easily cross-compile Godot binaries for the Raspberry Pi (from Linux x86_64).
+# A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux x86_64.
 #
 # Author: hiulit
 # Repository: https://github.com/hiulit/cross-compile-godot-raspberry-pi
 # License: MIT https://github.com/hiulit/cross-compile-godot-raspberry-pi/blob/master/LICENSE
 #
 # Requirements:
-# - Godot source files (https://github.com/godotengine/godot)
+# - Godot source files (https://github.com/godotengine/godot) (can be downloaded with this script)
 # - Godot dependecies to compile for X11 Linux (https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html)
-# - Godot toolchains to cross-compile for ARM (https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2)
+# - Godot toolchains to cross-compile for ARM (https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
 # - curl
 # - git
 # - jq
@@ -26,7 +26,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="Cross-compile Godot for the Raspberry Pi"
-readonly SCRIPT_DESCRIPTION="A script to easily cross-compile Godot binaries for the Raspberry Pi (from Linux x86_64)."
+readonly SCRIPT_DESCRIPTION="A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux x86_64."
 readonly SCRIPT_CFG="$SCRIPT_DIR/cross-compile-godot-raspberry-pi.cfg"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
