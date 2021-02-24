@@ -43,8 +43,8 @@ RASPBERRY_PI_VERSIONS=()
 BINARIES_TO_COMPILE=()
 SCONS_JOBS="1"
 USE_LTO="no"
-GCC_VERBOSE="yes"
 
+GCC_VERBOSE="yes"
 AUDIO_FIX="no"
 
 CCFLAGS=""
@@ -174,7 +174,7 @@ function get_options() {
 
   while [[ -n "$1" ]]; do
     case "$1" in
-#H -h, --help                           Prints the help message.
+#H -h, --help                             Prints the help message.
       -h|--help)
         echo
         underline "$SCRIPT_TITLE"
@@ -188,23 +188,24 @@ function get_options() {
         echo
         exit 0
         ;;
-#H -v, --version                        Prints the script version.
+#H -v, --version                          Prints the script version.
       -v|--version)
         echo "$SCRIPT_VERSION"
         exit 0
         ;;
-#H -gt, --get-tags                      Prints the Godot tags from GitHub (to be used with --godot-versions).
+#H -gt, --get-tags                        Prints the available Godot tags from GitHub (to be used with --godot-versions).
       -gt|--get-tags)
         curl -sL https://api.github.com/repos/godotengine/godot/tags | jq -r ".[].name" | grep -E '^[3-9].[1-9]'
         exit 0
         ;;
-#H -gj, --get-jobs                      Prints the number of jobs/CPUs (to be used with --scons-jobs).
+#H -gj, --get-jobs                        Prints the number of available jobs/CPUs (to be used with --scons-jobs).
       -gj|--get-jobs)
         lscpu | egrep 'CPU\(s\)'
         exit 0
         ;;
-#H -d, --download [file] [path]         Downloads the Godot source files or the Godot toolchains.
-#H                                          Files: "godot-source-files" or "godot-toolchains".
+#H -d, --download [file] [path]           Downloads the Godot source files or the Godot toolchains.
+#H                                          File: "godot-source-files" or "godot-toolchains".
+#H                                          Path (optional): Path to the directory where the files will be stored.
 #H                                          Default path: Same folder as this script.
       -d|--download)
         check_argument "$1" "$2" || exit 1
@@ -239,9 +240,9 @@ function get_options() {
 
         exit 0
         ;;
-#H -sd, --source-dir [path]             Sets the Godot source files directory.
+#H -sd, --source-dir [path]               Sets the Godot source files directory.
 #H                                          Default: Same folder as this script.
-      -sp|--source-dir)
+      -sd|--source-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
         shift
@@ -254,9 +255,9 @@ function get_options() {
         GODOT_SOURCE_FILES_DIR="$1"
         set_config "godot_source_files_dir" "$GODOT_SOURCE_FILES_DIR"
         ;;
-#H -td, --toolchains-dir [path]         Sets the Godot toolchains directory.
+#H -td, --toolchains-dir [path]           Sets the Godot toolchains directory.
 #H                                          Default: Same folder as this script.
-      -tp|--toolchains-dir)
+      -td|--toolchains-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
         shift
@@ -269,9 +270,9 @@ function get_options() {
         GODOT_TOOLCHAINS_DIR="$1"
         set_config "godot_toolchains_dir" "$GODOT_TOOLCHAINS_DIR"
         ;;
-#H -bd, --binaries-dir [path]           Sets the Godot compiled binaries directory.
+#H -bd, --binaries-dir [path]             Sets the Godot compiled binaries directory.
 #H                                          Default: Same folder as this script.
-      -bp|--binaries-dir)
+      -bd|--binaries-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
         shift
@@ -284,8 +285,8 @@ function get_options() {
         GODOT_COMPILED_BINARIES_DIR="$1"
         set_config "godot_compiled_binaries_dir" "$GODOT_COMPILED_BINARIES_DIR"
         ;;
-#H -gv, --godot-versions [version/s]        Sets the Godot version/s to be compiled.
-#H                                          Version/s: Use '-gt' or '--get-tags' to see the available versions.
+#H -gv, --godot-versions [version/s]      Sets the Godot version/s to be compiled.
+#H                                          Version/s: Use '--get-tags' to see the available versions.
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -300,7 +301,7 @@ function get_options() {
 
         set_config "godot_versions" "${GODOT_VERSIONS[@]}"
         ;;
-#H -gc, --godot-commits [SHA-1 hash/es]      Sets the Godot commit/s to be compiled.
+#H -gc, --godot-commits [commit/s]   Sets the Godot commit/s to be compiled.
 #H                                          Commit/s: SHA-1 hash/es.
       -gc|--godot-commits)
         check_argument "$1" "$2" || exit 1
@@ -316,8 +317,8 @@ function get_options() {
 
         set_config "godot_commits" "${GODOT_COMMITS[@]}"
         ;;
-#H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to compile.
-#H                                          Version/s: "0" "1" "2" "3" "4".
+#H -rv, --rpi-versions [version/s]        Sets the Raspberry Pi version/s to compile.
+#H                                          Version/s: "0 1 2 3 4".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -332,9 +333,9 @@ function get_options() {
 
         set_config "raspberry_pi_versions" "${RASPBERRY_PI_VERSIONS[@]}"
         ;;
-#H -c, --compile [binary type/s]        Sets the different types of Godot binaries to compile.
-#H                                          Binary type/s: "editor" "export-template" "headless" "server".
-      -c|--compile)
+#H -b, --binaries [binary type/s]         Sets the different types of Godot binaries to compile.
+#H                                          Binary type/s: "editor export-template headless server".
+      -b|--binaries)
         check_argument "$1" "$2" || exit 1
         shift
 
@@ -348,7 +349,7 @@ function get_options() {
 
         set_config "binaries_to_compile" "${BINARIES_TO_COMPILE[@]}"
         ;;
-#H -j, --scons-jobs [number]            Sets the jobs (CPUs) to use in SCons.
+#H -j, --scons-jobs [number]              Sets the jobs (CPUs) to use in SCons.
 #H                                          Number: "1-∞".
 #H                                          Default: "1".
       -j|--scons-jobs)
@@ -364,7 +365,7 @@ function get_options() {
         SCONS_JOBS="$1"
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
-#H -l, --use-lto [option]               Enables using Link Time Optimization (LTO) when compiling.
+#H -l, --use-lto [option]                 Enables using Link Time Optimization (LTO) when compiling.
 #H                                          Options: "yes" or "no".
 #H                                          Default: "no".
       -l|--use-lto)
@@ -380,7 +381,7 @@ function get_options() {
         USE_LTO="$1"
         set_config "use_lto" "$USE_LTO"
         ;;
-#H -a, --auto                           Stars compiling with the settings in the config file.
+#H -a, --auto                             Starts compiling with the settings in the config file.
       -a|--auto)
         check_config
         ;;
@@ -407,30 +408,26 @@ function main() {
   if [[ -z "$GODOT_VERSIONS" ]] && [[ -z "$GODOT_COMMITS" ]]; then
     log >&2
     log "ERROR: At least one version of Godot or one commit must be set to compile." >&2
-    log "Use '-gv' or '--godot-versions' [version/s]" >&2
-    log "Version/s: Use '-gt' or '--get-tags' to see the available versions." >&2
-    log "Use '-gc' or '--godot-commits' [commit/s]" >&2
-    log "Commit/s: SHA-1 hash/es." >&2
     ((errors+=1))
   fi
 
   if [[ -z "$BINARIES_TO_COMPILE" ]]; then
     log >&2
     log "ERROR: At least one type of Godot binary must be set to compile." >&2
-    log "Use '-c' or '--compile' [binary type/s]" >&2
-    log "Binary type/s: 'editor' 'export-template' 'headless' 'server'." >&2
     ((errors+=1))
   fi
 
   if [[ -z "$RASPBERRY_PI_VERSIONS" ]]; then
     log >&2
     log "ERROR: At least one version of Raspberry Pi must be set to compile." >&2
-    log "Use '-rv' or '--rpi-versions' [version/s]" >&2
-    log "Version/s: '0' '1' '2' '3' '4." >&2
     ((errors+=1))
   fi
 
-  [[ "$errors" -gt 0 ]] && exit 1
+  if [[ "$errors" -gt 0 ]]; then
+    log >&2
+    log "Use '$0 --help' to see all the options." >&2
+    exit 1
+  fi
 
   log
   log "----------"
@@ -443,7 +440,6 @@ function main() {
   log "Raspberry Pi version/s to compile: ${RASPBERRY_PI_VERSIONS[@]}"
   log "SCons jobs: $SCONS_JOBS"
   log "Use LTO: $USE_LTO"
-  log "GCC verbose: $GCC_VERBOSE"
   log "----------"
   log
 
