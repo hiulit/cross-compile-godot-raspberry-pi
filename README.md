@@ -10,6 +10,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 - [Godot dependecies to compile for X11 Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html)
 - [Godot toolchains to cross-compile for ARM](https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
 - `curl`
+- `libfreetype-dev` (only to compile versions `3.1-stable` and `3.1.1-stable`)
 - `git`
 - `jq`
 - `tar`
