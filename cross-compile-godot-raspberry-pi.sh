@@ -18,6 +18,10 @@
 # - tar
 # - wget
 # - zip
+#
+# Limitations
+#
+# - Unable to compile Godot 2.x because it requires gcc < 6 and this toolchain only has gcc 10.2.
 
 # Globals ########################################
 
