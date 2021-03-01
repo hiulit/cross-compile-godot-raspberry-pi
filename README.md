@@ -6,9 +6,11 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 ## Requirements:
 
-- [Godot source files](https://github.com/godotengine/godot) (can be downloaded with this script)
-- [Godot dependecies to compile for X11 Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html)
-- [Godot toolchains to cross-compile for ARM](https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
+- [Godot source files](https://github.com/godotengine/godot) (can be downloaded with this script).
+- [Godot dependecies to compile for X11 Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html).
+- [Godot toolchain to cross-compile for ARM](https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script).
+
+### Dependencies
 - `curl`
 - `libfreetype-dev` (only to compile versions `3.1-stable` and `3.1.1-stable`)
 - `git`
@@ -19,7 +21,9 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 ## Limitations
 
-- Unable to compile Godot 2.x because it requires gcc < 6 and this toolchain only has gcc 10.2.
+- Unable to compile Godot `2.x` because it requires `gcc < 6` and the toolchain this script uses only has `gcc 10.2`.
+- Godot `3.1-stable` and `3.1.1-stable` need an extra dependency (`libfreetype-dev`) to be able to be compiled.
+- Raspberry Pi `0`, `1` and `2` can't be compiled Link Time Optimization (LTO)
 
 ## 🛠️ Setup
 
@@ -138,7 +142,7 @@ Log files are stored in `logs/`.
 ./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
 ```
 
-## Config file
+## 📋 Config file
 
 You can edit this file directly, instead of passing all the options mentioned above, and then run:
 
@@ -197,15 +201,15 @@ See [CHANGELOG](/CHANGELOG.md).
 **hiulit**
 
 - Twitter: [@hiulit](https://twitter.com/hiulit)
-- GitHub: [@hiulit](https://github.com/kefhiulitranabg)
+- GitHub: [@hiulit](https://github.com/hiulit)
 
 ## 🤝 Contributing
 
 Feel free to:
 
-- [Open an issue](https://github.com/hiulit/RetroPie-Godot-Game-Engine-Emulator/issues) if you find a bug.
-- [Create a pull request](https://github.com/hiulit/RetroPie-Godot-Game-Engine-Emulator/pulls) if you have a new cool feature to add to the project.
-- [Start a new discussion]() about a feature request.
+- [Open an issue](https://github.com/hiulit/cross-compile-godot-raspberry-pi/issues) if you find a bug.
+- [Create a pull request](https://github.com/hiulit/cross-compile-godot-raspberry-pi/pulls) if you have a new cool feature to add to the project.
+- [Start a new discussion](https://github.com/hiulit/cross-compile-godot-raspberry-pi/discussions) about a feature request.
 
 ## 🙌 Supporting this project
 
@@ -229,7 +233,7 @@ If you can't, consider sharing it with the world...
 
 Thanks to:
 
-- [Hein-Pieter van Braam-Stewart](https://github.com/hpvb) - For the [Godot Engine buildroot](https://github.com/godotengine/buildroot), which is the base of this script.
+- [Hein-Pieter van Braam-Stewart](https://github.com/hpvb) - For the [Godot Engine buildroot](https://github.com/godotengine/buildroot), which is the base of this script and for helping me figure out how to use it.
 
 ## 📝 Licenses
 
