@@ -486,6 +486,13 @@ function main() {
         ;;
     esac
 
+    local use_lto="$USE_LTO"
+
+    # Disable LTO for some Raspberry Pi versions.
+    if [[ "$rpi_version" -lt 3 ]] && [[ "$USE_LTO" == "yes" ]]; then
+      use_lto="no"
+    fi
+
     if [[ "$GCC_VERBOSE" == "no" ]]; then
       CCFLAGS+=" -w -fcompare-debug-second"
     fi
@@ -552,7 +559,7 @@ function main() {
         platform="$GODOT_PLATFORM" \
         tools="$GODOT_TOOLS" \
         target="$GODOT_TARGET" \
-        use_lto="$USE_LTO" \
+        use_lto="$use_lto" \
         use_static_cpp=yes \
         CCFLAGS="$CCFLAGS" \
         CC=arm-godot-linux-gnueabihf-gcc \
