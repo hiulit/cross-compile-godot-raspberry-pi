@@ -424,6 +424,7 @@ function main() {
 
   trap ctrl_c INT
 
+  # Check for mandatory arguments.
   local errors=0
 
   if [[ -z "$GODOT_VERSIONS" ]] && [[ -z "$GODOT_COMMITS" ]]; then
@@ -494,6 +495,7 @@ function main() {
     fi
 
     if [[ "$GCC_VERBOSE" == "no" ]]; then
+      # Disable warnings and notes.
       CCFLAGS+=" -w -fcompare-debug-second"
     fi
 
