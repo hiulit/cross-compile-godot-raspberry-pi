@@ -552,7 +552,7 @@ function main() {
         log "> Done!"
 
         log ">> Compiling Godot ..."
-        PATH="$GODOT_TOOLCHAINS_DIR"/bin/:$PATH \
+        PATH="$GODOT_TOOLCHAIN_DIR"/bin/:$PATH \
         scons \
         -j"$SCONS_JOBS" \
         platform="$GODOT_PLATFORM" \
