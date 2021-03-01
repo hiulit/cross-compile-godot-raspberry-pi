@@ -86,37 +86,56 @@ Log files are stored in `logs/`.
   - Default: `no`.
 - `--auto`: Starts compiling taking the settings in the [config file](#config-file).
 
-## Examples
+## 💁 Examples
 
-- Compile the Godot `editor` (version `3.2.3-stable`) for the Raspberry Pi `4` using `4` CPU cores.
+- Compile:
+  - The Godot `editor` (version `3.2.3-stable`).
+  - For the Raspberry Pi `4`.
+  - Using `4` CPU cores.
 
 ```
 ./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --rpi-versions "4" --binaries "editor" --scons-jobs "4"
 ```
 
-- Compile the Godot `editor` (version `3.2.3-stable`) and the `4f891b706027dc800f6949bec413f448defdd20d` commit (which is `3.2.4 RC 3`) for the Raspberry Pi `4` using `4` CPU cores.
+- Compile:
+  - The Godot `editor` (version `3.2.3-stable`) and the `4f891b706027dc800f6949bec413f448defdd20d` commit (which is `3.2.4 RC 3`).
+  - For the Raspberry Pi `4`.
+  - Using `4` CPU cores.
 
 ```
 ./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --godot-commits "4f891b706027dc800f6949bec413f448defdd20d" --rpi-versions "4" --binaries "editor" --scons-jobs "4"
 ```
 
-- Compile the Godot `editor` (version `3.2.3-stable`) for the Raspberry Pi `3` and `4` using `8` CPU cores with `LTO enabled`.
+- Compile:
+  - The Godot `editor` (version `3.2.3-stable`).
+  - For the Raspberry Pi `3` and `4`.
+  - Using `8` CPU cores.
+  - With `LTO enabled`.
 
 
 ```
 ./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --rpi-versions "3 4" --binaries "editor" --scons-jobs "4" --use-lto "yes"
 ```
 
-- Compile the Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`) for the Raspberry Pi `3` and `4` using `8` CPU cores with LTO `enabled`.
+- Compile:
+  - The Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`).
+  - For the Raspberry Pi `3` and `4`.
+  - Using `8` CPU cores.
+  - With LTO `enabled`.
 
 ```
 ./cross-compile-godot-raspberry-pi.sh --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
 ```
 
-- Compile the Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`) for the Raspberry Pi `3` and `4` using `8` CPU cores with `LTO enabled` where the Godot source files are located in `/home/username/godot-source-files`.
+- Compile:
+  - The Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`).
+  - For the Raspberry Pi `3` and `4`.
+  - Using `8` CPU cores.
+  - With `LTO enabled`.
+  - Where the Godot source files are located in `/path/to/the/godot/source/files`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --source-dir "/home/username/godot-source-files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
 ```
 
 ## Config file
