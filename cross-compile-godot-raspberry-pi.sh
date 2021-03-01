@@ -324,12 +324,8 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for argument in $@; do
-          if [[ "$argument" =~ ^- ]]; then
-            break
-          fi
-
-          GODOT_VERSIONS+=("$argument")
+        for version in "$1"; do
+          GODOT_VERSIONS+=("$version")
         done
 
         set_config "godot_versions" "${GODOT_VERSIONS[@]}"
@@ -340,12 +336,8 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for argument in $@; do
-          if [[ "$argument" =~ ^- ]]; then
-            break
-          fi
-
-          GODOT_COMMITS+=("$argument")
+        for commit in "$1"; do
+          GODOT_COMMITS+=("$commit")
         done
 
         set_config "godot_commits" "${GODOT_COMMITS[@]}"
@@ -356,12 +348,8 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for argument in $@; do
-          if [[ "$argument" =~ ^- ]]; then
-            break
-          fi
-
-          RASPBERRY_PI_VERSIONS+=("$argument")
+        for version in "$1"; do
+          RASPBERRY_PI_VERSIONS+=("$version")
         done
 
         set_config "raspberry_pi_versions" "${RASPBERRY_PI_VERSIONS[@]}"
@@ -372,12 +360,12 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for argument in $@; do
-          if [[ "$argument" =~ ^- ]]; then
+        for binary in "$1"; do
+          if [[ "$binary" =~ ^- ]]; then
             break
           fi
 
-          BINARIES_TO_COMPILE+=("$argument")
+          BINARIES_TO_COMPILE+=("$binary")
         done
 
         set_config "binaries_to_compile" "${BINARIES_TO_COMPILE[@]}"
