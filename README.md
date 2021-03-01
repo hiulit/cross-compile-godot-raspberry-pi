@@ -63,7 +63,7 @@ Log files are stored in `logs/`.
 
 - `--help`: Prints the help message.
 - `--version`: Prints the script version.
-- `--get-tags`: Prints the Godot tags from GitHub available to be compiled.
+- `--get-tags`: Prints the Godot tags from GitHub available to compile.
 - `--get-jobs`: Prints the number of available jobs/CPUs.
 - `--download [file] [path]`: Downloads the Godot source files or the Godot toolchain.
   - File: `godot-source-files` or `godot-toolchain`.
@@ -75,9 +75,9 @@ Log files are stored in `logs/`.
   - Default: Same folder as this script.
 - `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
   - Default: Same folder as this script.
-- `--godot-versions [version/s]`: Sets the Godot version/s to be compiled.
+- `--godot-versions [version/s]`: Sets the Godot version/s to compile.
   - Version/s: Use `--get-tags` to see the available versions.
-- `--godot-commits [commit/s]`: Sets the Godot commit/s to be compiled.
+- `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
   - Commit/s: SHA-1 hash/es.
 - `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
   - Version/s: `0 1 2 3 4`.
@@ -166,11 +166,11 @@ godot_toolchain_dir = ""
 # Default: Same folder as this script.
 godot_compiled_binaries_dir = ""
 
-# Godot version/s to be compiled (separated by blank spaces).
+# Godot version/s to compile (separated by blank spaces).
 # Use "--get-tags" to see the available versions.
 godot_versions = ""
 
-# Godot commit/s to be compiled (separated by blank spaces).
+# Godot commit/s to compile (separated by blank spaces).
 # Commit/s: SHA-1 hash/es.
 godot_commits = ""
 
@@ -180,7 +180,7 @@ raspberry_pi_versions = ""
 
 # Types of Godot binaries to compile (separated by blank spaces).
 # Binary type/s: "editor export-template headless server".
-binaries_to_compile = ""
+binaries = ""
 
 # Jobs (CPUs) to use in SCons.
 # Number: "1-∞".

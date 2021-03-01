@@ -52,7 +52,7 @@ GODOT_COMPILED_BINARIES_DIR="$SCRIPT_DIR/compiled-binaries"
 GODOT_VERSIONS=()
 GODOT_COMMITS=()
 RASPBERRY_PI_VERSIONS=()
-BINARIES_TO_COMPILE=()
+BINARIES=()
 SCONS_JOBS="1"
 USE_LTO="no"
 
@@ -85,10 +85,8 @@ function underline() {
   fi
   local dashes
   local message="$1"
-  # [[ "$GUI_FLAG" -eq 1 ]] && log "$message" || echo "$message"
   echo "$message"
   for ((i=1; i<="${#message}"; i+=1)); do [[ -n "$dashes" ]] && dashes+="-" || dashes="-"; done
-  # [[ "$GUI_FLAG" -eq 1 ]] && log "$dashes" || echo "$dashes"
   echo "$dashes"
 }
 
@@ -313,14 +311,14 @@ function get_options() {
         shift
 
         if ! [[ -d "$1" ]]; then
-          echo "ERROR: The path for '$option' ('$1') doesn't exist." >&2
+          echo "ERROR: The folder for '$option' ('$1') doesn't exist." >&2
           exit 1
         fi
 
         GODOT_COMPILED_BINARIES_DIR="$1"
         set_config "godot_compiled_binaries_dir" "$GODOT_COMPILED_BINARIES_DIR"
         ;;
-#H -gv, --godot-versions [version/s]    Sets the Godot version/s to be compiled.
+#H -gv, --godot-versions [version/s]    Sets the Godot version/s to compile.
 #H                                        Version/s: Use '--get-tags' to see the available versions.
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
@@ -332,7 +330,7 @@ function get_options() {
 
         set_config "godot_versions" "${GODOT_VERSIONS[@]}"
         ;;
-#H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to be compiled.
+#H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to compile.
 #H                                        Commit/s: SHA-1 hash/es.
       -gc|--godot-commits)
         check_argument "$1" "$2" || exit 1
@@ -367,10 +365,10 @@ function get_options() {
             break
           fi
 
-          BINARIES_TO_COMPILE+=("$binary")
+          BINARIES+=("$binary")
         done
 
-        set_config "binaries_to_compile" "${BINARIES_TO_COMPILE[@]}"
+        set_config "binaries" "${BINARIES[@]}"
         ;;
 #H -j, --scons-jobs [number]            Sets the jobs (CPUs) to use in SCons.
 #H                                        Number: "1-∞".
@@ -435,7 +433,7 @@ function main() {
     ((errors+=1))
   fi
 
-  if [[ -z "$BINARIES_TO_COMPILE" ]]; then
+  if [[ -z "$BINARIES" ]]; then
     log >&2
     log "ERROR: At least one type of Godot binary must be set to compile." >&2
     ((errors+=1))
@@ -460,7 +458,7 @@ function main() {
   log "Godot compiled binaries directory: $GODOT_COMPILED_BINARIES_DIR"
   log "Godot version/s to compile: ${GODOT_VERSIONS[@]}"
   log "Godot commit/s to compile: $GODOT_COMMITS"
-  log "Binaries to compile: ${BINARIES_TO_COMPILE[@]}"
+  log "Binaries to compile: ${BINARIES[@]}"
   log "Raspberry Pi version/s to compile: ${RASPBERRY_PI_VERSIONS[@]}"
   log "SCons jobs: $SCONS_JOBS"
   log "Use LTO: $USE_LTO"
@@ -513,8 +511,8 @@ function main() {
 
       apply_audio_fix
 
-      IFS=" " read -r -a BINARIES_TO_COMPILE <<< "${BINARIES_TO_COMPILE[@]}"
-      for binary_type in "${BINARIES_TO_COMPILE[@]}"; do
+      IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
+      for binary_type in "${BINARIES[@]}"; do
         case "$binary_type" in
           "editor")
             GODOT_TOOLS="yes"
