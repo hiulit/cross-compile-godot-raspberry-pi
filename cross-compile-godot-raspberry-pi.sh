@@ -35,6 +35,7 @@ readonly SCRIPT_DESCRIPTION="A script to easily cross-compile Godot binaries for
 readonly SCRIPT_CFG="$SCRIPT_DIR/cross-compile-godot-raspberry-pi.cfg"
 readonly LOG_DIR="$SCRIPT_DIR/logs"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
+readonly GODOT_AUDIO_FIX_FILE="drivers/alsa/audio_driver_alsa.cpp"
 
 
 # Variables #####################################
@@ -50,7 +51,6 @@ SCONS_JOBS="1"
 USE_LTO="no"
 
 GCC_VERBOSE="yes"
-AUDIO_FIX="no"
 
 CCFLAGS=""
 GODOT_TOOLS=""
@@ -165,9 +165,33 @@ function log() {
 
 
 function ctrl_c() {
+  remove_audio_fix
+
   log >&2
   log "Cancelled by user." >&2
   exit 1
+}
+
+
+function apply_audio_fix() {
+  # Apply audio fix. See https://github.com/godotengine/godot/pull/43928.
+  if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
+    sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/$GODOT_AUDIO_FIX_FILE"
+    # if [[ "$?" -eq 0 ]]; then
+    #   echo "Audio fix applied."
+    # fi
+  fi
+}
+
+
+function remove_audio_fix() {
+  # Revert the audio fix to prevent git issues.
+  if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
+    sed -i "s/int16_t/uint8_t/gi" "$GODOT_SOURCE_FILES_DIR/$GODOT_AUDIO_FIX_FILE"
+    # if [[ "$?" -eq 0 ]]; then
+    #   echo "Audio fix removed."
+    # fi
+  fi
 }
 
 
@@ -486,6 +510,8 @@ function main() {
         sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
       fi
 
+      apply_audio_fix
+
       IFS=" " read -r -a BINARIES_TO_COMPILE <<< "${BINARIES_TO_COMPILE[@]}"
       for binary_type in "${BINARIES_TO_COMPILE[@]}"; do
         case "$binary_type" in
@@ -523,7 +549,7 @@ function main() {
         scons --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
-          exit 1
+          remove_audio_fix
         fi
         log "> Done!"
 
@@ -542,7 +568,7 @@ function main() {
         module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when compiling Godot." >&2
-          exit 1
+          remove_audio_fix
         fi
         log "> Done!"
 
@@ -553,16 +579,14 @@ function main() {
         mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
-          exit 1
+          remove_audio_fix
         fi
         log "> Done!"
 
         log ">> Stripping debug symbols for 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
         "$GODOT_TOOLCHAINS_DIR"/bin/arm-godot-linux-gnueabihf-strip "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
         if ! [[ "$?" -eq 0 ]]; then
-          log "ERROR: Something went wrong when stripping the debug symbols of 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin'." >&2
-          exit 1
-        fi
+          remove_audio_fix
         log "> Done!"
 
         log ">> Compressing 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
@@ -570,8 +594,7 @@ function main() {
         if [[ "$?" -eq 0 ]]; then
           rm "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
         else
-          log "ERROR: Something went wrong when compressing 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin'." >&2
-          exit 1
+          remove_audio_fix
         fi
         log "> Done!"
 
@@ -581,12 +604,7 @@ function main() {
         log
       done
 
-      if [[ "$AUDIO_FIX" == "yes" ]]; then
-        # Revert the audio fix to prevent git issues.
-        AUDIO_FIX="no"
-        sed -i "s/int16_t/uint8_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
-      fi
-
+      remove_audio_fix
     done
   done
 }
