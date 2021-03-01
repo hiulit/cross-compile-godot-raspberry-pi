@@ -504,6 +504,7 @@ function main() {
       git checkout --quiet "$godot_version"
       if ! [[ "$?" -eq 0 ]]; then
         log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
+        continue
       fi
 
       apply_audio_fix
@@ -546,6 +547,7 @@ function main() {
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
           remove_audio_fix
+          continue
         fi
         log "> Done!"
 
@@ -565,6 +567,7 @@ function main() {
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when compiling Godot." >&2
           remove_audio_fix
+          continue
         fi
         log "> Done!"
 
@@ -584,6 +587,7 @@ function main() {
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
           remove_audio_fix
+          continue
         fi
         log "> Done!"
 
