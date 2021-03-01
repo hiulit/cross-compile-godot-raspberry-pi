@@ -54,19 +54,19 @@ Use './cross-compile-godot-raspberry-pi.sh --help' to see all the options.
 
 Log files are stored in `logs/`.
 
-## Options
+## 📖 Options
 
 - `--help`: Prints the help message.
 - `--version`: Prints the script version.
-- `--get-tags`: Prints the available Godot tags from GitHub (to be used with `--godot-versions`).
-- `--get-jobs`: Prints the number of available jobs/CPUs (to be used with `--scons-jobs`).
-- `--download [file] [path]`: Downloads the Godot source files or the Godot toolchains.
-  - File: `godot-source-files` or `godot-toolchains`.
+- `--get-tags`: Prints the Godot tags from GitHub available to be compiled.
+- `--get-jobs`: Prints the number of available jobs/CPUs.
+- `--download [file] [path]`: Downloads the Godot source files or the Godot toolchain.
+  - File: `godot-source-files` or `godot-toolchain`.
   - Path (optional): Path to the directory where the files will be stored.
   - Default path: Same folder as this script.
 - `--source-dir [path]`: Sets the Godot source files directory.
   - Default: Same folder as this script.
-- `--toolchains-dir [path]`: Sets the Godot toolchains directory.
+- `--toolchain-dir [path]`: Sets the Godot toolchain directory.
   - Default: Same folder as this script.
 - `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
   - Default: Same folder as this script.
@@ -84,7 +84,7 @@ Log files are stored in `logs/`.
 - `--use-lto [option]`: Enables using Link Time Optimization (LTO) when compiling.
   - Options: `yes` or `no`.
   - Default: `no`.
-- `--auto`: Starts compiling with the settings in the [config file](#config-file).
+- `--auto`: Starts compiling taking the settings in the [config file](#config-file).
 
 ## Examples
 

@@ -207,7 +207,7 @@ function get_options() {
 
   while [[ -n "$1" ]]; do
     case "$1" in
-#H -h, --help                             Prints the help message.
+#H -h, --help                           Prints the help message.
       -h|--help)
         echo
         underline "$SCRIPT_TITLE"
@@ -221,25 +221,25 @@ function get_options() {
         echo
         exit 0
         ;;
-#H -v, --version                          Prints the script version.
+#H -v, --version                        Prints the script version.
       -v|--version)
         echo "$SCRIPT_VERSION"
         exit 0
         ;;
-#H -gt, --get-tags                        Prints the available Godot tags from GitHub (to be used with --godot-versions).
+#H -gt, --get-tags                      Prints the Godot tags from GitHub available to be compiled.
       -gt|--get-tags)
         curl -sL https://api.github.com/repos/godotengine/godot/tags | jq -r ".[].name" | grep -E '^[3-9].[1-9]'
         exit 0
         ;;
-#H -gj, --get-jobs                        Prints the number of available jobs/CPUs (to be used with --scons-jobs).
+#H -gj, --get-jobs                      Prints the number of available jobs/CPUs.
       -gj|--get-jobs)
         lscpu | egrep 'CPU\(s\)'
         exit 0
         ;;
-#H -d, --download [file] [path]           Downloads the Godot source files or the Godot toolchain.
-#H                                          File: "godot-source-files" or "godot-toolchain".
-#H                                          Path (optional): Path to the directory where the files will be stored.
-#H                                          Default path: Same folder as this script.
+#H -d, --download [file] [path]         Downloads the Godot source files or the Godot toolchain.
+#H                                        File: "godot-source-files" or "godot-toolchain".
+#H                                        Path (optional): Path to the directory where the files will be stored.
+#H                                        Default path: Same folder as this script.
       -d|--download)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -273,8 +273,8 @@ function get_options() {
 
         exit 0
         ;;
-#H -sd, --source-dir [path]               Sets the Godot source files directory.
-#H                                          Default: Same folder as this script.
+#H -sd, --source-dir [path]             Sets the Godot source files directory.
+#H                                        Default: Same folder as this script.
       -sd|--source-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -288,8 +288,8 @@ function get_options() {
         GODOT_SOURCE_FILES_DIR="$1"
         set_config "godot_source_files_dir" "$GODOT_SOURCE_FILES_DIR"
         ;;
-#H -td, --toolchain-dir [path]           Sets the Godot toolchain directory.
-#H                                          Default: Same folder as this script.
+#H -td, --toolchain-dir [path]          Sets the Godot toolchain directory.
+#H                                        Default: Same folder as this script.
       -td|--toolchain-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -303,8 +303,8 @@ function get_options() {
         GODOT_TOOLCHAIN_DIR="$1"
         set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
         ;;
-#H -bd, --binaries-dir [path]             Sets the Godot compiled binaries directory.
-#H                                          Default: Same folder as this script.
+#H -bd, --binaries-dir [path]           Sets the Godot compiled binaries directory.
+#H                                        Default: Same folder as this script.
       -bd|--binaries-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -318,8 +318,8 @@ function get_options() {
         GODOT_COMPILED_BINARIES_DIR="$1"
         set_config "godot_compiled_binaries_dir" "$GODOT_COMPILED_BINARIES_DIR"
         ;;
-#H -gv, --godot-versions [version/s]      Sets the Godot version/s to be compiled.
-#H                                          Version/s: Use '--get-tags' to see the available versions.
+#H -gv, --godot-versions [version/s]    Sets the Godot version/s to be compiled.
+#H                                        Version/s: Use '--get-tags' to see the available versions.
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -334,8 +334,8 @@ function get_options() {
 
         set_config "godot_versions" "${GODOT_VERSIONS[@]}"
         ;;
-#H -gc, --godot-commits [commit/s]   Sets the Godot commit/s to be compiled.
-#H                                          Commit/s: SHA-1 hash/es.
+#H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to be compiled.
+#H                                        Commit/s: SHA-1 hash/es.
       -gc|--godot-commits)
         check_argument "$1" "$2" || exit 1
         shift
@@ -350,8 +350,8 @@ function get_options() {
 
         set_config "godot_commits" "${GODOT_COMMITS[@]}"
         ;;
-#H -rv, --rpi-versions [version/s]        Sets the Raspberry Pi version/s to compile.
-#H                                          Version/s: "0 1 2 3 4".
+#H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to compile.
+#H                                        Version/s: "0 1 2 3 4".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -366,8 +366,8 @@ function get_options() {
 
         set_config "raspberry_pi_versions" "${RASPBERRY_PI_VERSIONS[@]}"
         ;;
-#H -b, --binaries [binary type/s]         Sets the different types of Godot binaries to compile.
-#H                                          Binary type/s: "editor export-template headless server".
+#H -b, --binaries [binary type/s]       Sets the different types of Godot binaries to compile.
+#H                                        Binary type/s: "editor export-template headless server".
       -b|--binaries)
         check_argument "$1" "$2" || exit 1
         shift
@@ -382,9 +382,9 @@ function get_options() {
 
         set_config "binaries_to_compile" "${BINARIES_TO_COMPILE[@]}"
         ;;
-#H -j, --scons-jobs [number]              Sets the jobs (CPUs) to use in SCons.
-#H                                          Number: "1-∞".
-#H                                          Default: "1".
+#H -j, --scons-jobs [number]            Sets the jobs (CPUs) to use in SCons.
+#H                                        Number: "1-∞".
+#H                                        Default: "1".
       -j|--scons-jobs)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -398,9 +398,9 @@ function get_options() {
         SCONS_JOBS="$1"
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
-#H -l, --use-lto [option]                 Enables using Link Time Optimization (LTO) when compiling.
-#H                                          Options: "yes" or "no".
-#H                                          Default: "no".
+#H -l, --use-lto [option]               Enables using Link Time Optimization (LTO) when compiling.
+#H                                        Options: "yes" or "no".
+#H                                        Default: "no".
       -l|--use-lto)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -414,7 +414,7 @@ function get_options() {
         USE_LTO="$1"
         set_config "use_lto" "$USE_LTO"
         ;;
-#H -a, --auto                             Starts compiling with the settings in the config file.
+#H -a, --auto                           Starts compiling taking the settings in the config file.
       -a|--auto)
         check_config
         ;;
