@@ -501,12 +501,9 @@ function main() {
     for godot_version in "${GODOT_VERSIONS[@]}"; do
       cd "$GODOT_SOURCE_FILES_DIR"
 
-      git checkout "$godot_version"
-
-      if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
-        # Apply audio fix. See https://github.com/godotengine/godot/pull/43928.
-        AUDIO_FIX="yes"
-        sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/drivers/alsa/audio_driver_alsa.cpp"
+      git checkout --quiet "$godot_version"
+      if ! [[ "$?" -eq 0 ]]; then
+        log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
       fi
 
       apply_audio_fix
