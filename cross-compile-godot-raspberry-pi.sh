@@ -49,10 +49,10 @@ readonly GODOT_AUDIO_FIX_FILE="drivers/alsa/audio_driver_alsa.cpp"
 GODOT_SOURCE_FILES_DIR="$SCRIPT_DIR/godot"
 GODOT_TOOLCHAIN_DIR="$SCRIPT_DIR/arm-godot-linux-gnueabihf_sdk-buildroot"
 GODOT_COMPILED_BINARIES_DIR="$SCRIPT_DIR/compiled-binaries"
-GODOT_VERSIONS=()
-GODOT_COMMITS=()
-RASPBERRY_PI_VERSIONS=()
-BINARIES=()
+GODOT_VERSIONS=""
+GODOT_COMMITS=""
+RASPBERRY_PI_VERSIONS=""
+BINARIES=""
 SCONS_JOBS="1"
 USE_LTO="no"
 
@@ -336,11 +336,9 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for commit in "$1"; do
-          GODOT_COMMITS+=("$commit")
-        done
+        GODOT_COMMITS="$1"
 
-        set_config "godot_commits" "${GODOT_COMMITS[@]}"
+        set_config "godot_commits" "$GODOT_COMMITS"
         ;;
 #H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to compile.
 #H                                        Version/s: "0 1 2 3 4".
@@ -348,11 +346,9 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for version in "$1"; do
-          RASPBERRY_PI_VERSIONS+=("$version")
-        done
+        RASPBERRY_PI_VERSIONS="$1"
 
-        set_config "raspberry_pi_versions" "${RASPBERRY_PI_VERSIONS[@]}"
+        set_config "raspberry_pi_versions" "$RASPBERRY_PI_VERSIONS"
         ;;
 #H -b, --binaries [binary type/s]       Sets the different types of Godot binaries to compile.
 #H                                        Binary type/s: "editor export-template headless server".
@@ -360,15 +356,9 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for binary in "$1"; do
-          if [[ "$binary" =~ ^- ]]; then
-            break
-          fi
+        BINARIES="$1"
 
-          BINARIES+=("$binary")
-        done
-
-        set_config "binaries" "${BINARIES[@]}"
+        set_config "binaries" "$BINARIES"
         ;;
 #H -j, --scons-jobs [number]            Sets the jobs (CPUs) to use in SCons.
 #H                                        Number: "1-∞".
