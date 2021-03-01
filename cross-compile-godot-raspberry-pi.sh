@@ -11,7 +11,7 @@
 # Requirements:
 # - Godot source files (https://github.com/godotengine/godot) (can be downloaded with this script)
 # - Godot dependecies to compile for X11 Linux (https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html)
-# - Godot toolchains to cross-compile for ARM (https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
+# - Godot toolchain to cross-compile for ARM (https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
 # - curl
 # - libfreetype-dev (only to compile versions 3.1-stable and 3.1.1-stable)
 # - git
@@ -41,7 +41,7 @@ readonly GODOT_AUDIO_FIX_FILE="drivers/alsa/audio_driver_alsa.cpp"
 # Variables #####################################
 
 GODOT_SOURCE_FILES_DIR="$SCRIPT_DIR/godot"
-GODOT_TOOLCHAINS_DIR="$SCRIPT_DIR/arm-godot-linux-gnueabihf_sdk-buildroot"
+GODOT_TOOLCHAIN_DIR="$SCRIPT_DIR/arm-godot-linux-gnueabihf_sdk-buildroot"
 GODOT_COMPILED_BINARIES_DIR="$SCRIPT_DIR/compiled-binaries"
 GODOT_VERSIONS=()
 GODOT_COMMITS=()
@@ -232,8 +232,8 @@ function get_options() {
         lscpu | egrep 'CPU\(s\)'
         exit 0
         ;;
-#H -d, --download [file] [path]           Downloads the Godot source files or the Godot toolchains.
-#H                                          File: "godot-source-files" or "godot-toolchains".
+#H -d, --download [file] [path]           Downloads the Godot source files or the Godot toolchain.
+#H                                          File: "godot-source-files" or "godot-toolchain".
 #H                                          Path (optional): Path to the directory where the files will be stored.
 #H                                          Default path: Same folder as this script.
       -d|--download)
@@ -241,8 +241,8 @@ function get_options() {
         local option="$1"
         shift
 
-        if [[ "$1" != "godot-source-files" ]] && [[ "$1" != "godot-toolchains" ]]; then
-          echo "ERROR: Argument for '$option' ('"$1"') must be 'godot-source-files' or 'godot-toolchains'." >&2
+        if [[ "$1" != "godot-source-files" ]] && [[ "$1" != "godot-toolchain" ]]; then
+          echo "ERROR: Argument for '$option' ('"$1"') must be 'godot-source-files' or 'godot-toolchain'." >&2
           exit 1
         fi
 
@@ -255,16 +255,16 @@ function get_options() {
           git clone https://github.com/godotengine/godot.git "$GODOT_SOURCE_FILES_DIR"
         fi
 
-        if [[ "$1" == "godot-toolchains" ]]; then
+        if [[ "$1" == "godot-toolchain" ]]; then
           if [[ -n "$2" ]]; then
-            GODOT_TOOLCHAINS_DIR="$2"
-            set_config "godot_toolchains_dir" "$GODOT_TOOLCHAINS_DIR"
+            GODOT_TOOLCHAIN_DIR="$2"
+            set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
           fi
 
-          wget -P "$GODOT_TOOLCHAINS_DIR" -q --show-progress https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
-          tar -xvf "$GODOT_TOOLCHAINS_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2 --strip-components 1 -C "$GODOT_TOOLCHAINS_DIR"
-          rm "$GODOT_TOOLCHAINS_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
-          "$GODOT_TOOLCHAINS_DIR"/relocate-sdk.sh
+          wget -P "$GODOT_TOOLCHAIN_DIR" -q --show-progress https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
+          tar -xvf "$GODOT_TOOLCHAIN_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2 --strip-components 1 -C "$GODOT_TOOLCHAIN_DIR"
+          rm "$GODOT_TOOLCHAIN_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
+          "$GODOT_TOOLCHAIN_DIR"/relocate-sdk.sh
         fi
 
         exit 0
@@ -284,9 +284,9 @@ function get_options() {
         GODOT_SOURCE_FILES_DIR="$1"
         set_config "godot_source_files_dir" "$GODOT_SOURCE_FILES_DIR"
         ;;
-#H -td, --toolchains-dir [path]           Sets the Godot toolchains directory.
+#H -td, --toolchain-dir [path]           Sets the Godot toolchain directory.
 #H                                          Default: Same folder as this script.
-      -td|--toolchains-dir)
+      -td|--toolchain-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
         shift
@@ -296,8 +296,8 @@ function get_options() {
           exit 1
         fi
 
-        GODOT_TOOLCHAINS_DIR="$1"
-        set_config "godot_toolchains_dir" "$GODOT_TOOLCHAINS_DIR"
+        GODOT_TOOLCHAIN_DIR="$1"
+        set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
         ;;
 #H -bd, --binaries-dir [path]             Sets the Godot compiled binaries directory.
 #H                                          Default: Same folder as this script.
@@ -461,7 +461,7 @@ function main() {
   log
   log "----------"
   log "Godot source files directory: $GODOT_SOURCE_FILES_DIR"
-  log "Godot toolchains directory: $GODOT_TOOLCHAINS_DIR"
+  log "Godot toolchain directory: $GODOT_TOOLCHAIN_DIR"
   log "Godot compiled binaries directory: $GODOT_COMPILED_BINARIES_DIR"
   log "Godot version/s to compile: ${GODOT_VERSIONS[@]}"
   log "Godot commit/s to compile: $GODOT_COMMITS"
