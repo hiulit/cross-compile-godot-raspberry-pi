@@ -23,7 +23,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 - Unable to compile Godot `2.x` because it requires `gcc < 6` and the toolchain this script uses only has `gcc 10.2`.
 - Godot `3.1-stable` and `3.1.1-stable` need an extra dependency (`libfreetype-dev`) to be able to be compiled.
-- Raspberry Pi `0`, `1` and `2` can't be compiled Link Time Optimization (LTO)
+- Raspberry Pi `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO)
 
 ## 🛠️ Setup
 
