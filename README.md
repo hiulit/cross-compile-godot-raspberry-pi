@@ -153,9 +153,9 @@ You can edit this file directly, instead of passing all the options mentioned ab
 # Default: Same folder as this script.
 godot_source_files_dir = ""
 
-# Godot toolchains directory.
+# Godot toolchain directory.
 # Default: Same folder as this script.
-godot_toolchains_dir = ""
+godot_toolchain_dir = ""
 
 # Godot compiled binaries directory.
 # Default: Same folder as this script.
