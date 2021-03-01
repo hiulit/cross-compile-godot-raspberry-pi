@@ -582,8 +582,8 @@ function main() {
         fi
 
         log ">> Moving '$GODOT_BINARY_NAME' to '$GODOT_COMPILED_BINARIES_DIR' ..."
-        log ">> Renaming '$GODOT_BINARY_NAME' to 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
-        mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
+        log ">> Renaming '$GODOT_BINARY_NAME' to '$binary_name.bin' ..."
+        mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
           remove_audio_fix
