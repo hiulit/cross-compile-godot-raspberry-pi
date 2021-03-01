@@ -573,6 +573,14 @@ function main() {
 
         cd "$GODOT_SOURCE_FILES_DIR/bin"
 
+        local binary_name
+
+        if [[ "$use_lto" == "yes" ]]; then
+          binary_name="godot_${godot_version}_rpi${rpi_version}_${binary_type}_lto"
+        else
+          binary_name="godot_${godot_version}_rpi${rpi_version}_${binary_type}"
+        fi
+
         log ">> Moving '$GODOT_BINARY_NAME' to '$GODOT_COMPILED_BINARIES_DIR' ..."
         log ">> Renaming '$GODOT_BINARY_NAME' to 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
         mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
@@ -582,24 +590,29 @@ function main() {
         fi
         log "> Done!"
 
-        log ">> Stripping debug symbols for 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
-        "$GODOT_TOOLCHAINS_DIR"/bin/arm-godot-linux-gnueabihf-strip "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
+        log ">> Stripping debug symbols for '$binary_name.bin' ..."
+        "$GODOT_TOOLCHAIN_DIR"/bin/arm-godot-linux-gnueabihf-strip "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
         if ! [[ "$?" -eq 0 ]]; then
+          log "ERROR: Something went wrong when stripping the debug symbols of '$binary_name.bin'." >&2
           remove_audio_fix
-        log "> Done!"
-
-        log ">> Compressing 'godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin' ..."
-        zip "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.zip" "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
-        if [[ "$?" -eq 0 ]]; then
-          rm "$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.bin"
         else
+        log "> Done!"
+        fi
+
+        log ">> Compressing '$binary_name.bin' ..."
+        zip -j "$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+        if [[ "$?" -eq 0 ]]; then
+          rm "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+          log "> Done!"
+        else
+          log "ERROR: Something went wrong when compressing '$binary_name.bin'." >&2
           remove_audio_fix
         fi
-        log "> Done!"
 
         log
         log "The Godot '$binary_type' ('$godot_version') for the Raspberry Pi '$rpi_version' was compiled successfully!"
-        log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}_${binary_type}.zip'."
+        log
+        log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip'."
         log
       done
 
