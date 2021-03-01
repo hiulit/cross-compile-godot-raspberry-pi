@@ -324,11 +324,23 @@ function get_options() {
         check_argument "$1" "$2" || exit 1
         shift
 
-        for version in "$1"; do
-          GODOT_VERSIONS+=("$version")
+        local temp_array="$1"
+        local suffix="-stable"
+
+        # Convert string separated by blank spaces to an array.
+        IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
+        for version in "${temp_array[@]}"; do
+          # Append the necessary suffix "-stable" if it's not present.
+          if ! [[ "$version" =~ "$suffix" ]]; then
+            version+="$suffix " # Note the trailing blank space.
+          fi
+          GODOT_VERSIONS+="$version"
         done
 
-        set_config "godot_versions" "${GODOT_VERSIONS[@]}"
+        # Remove trailing blank space.
+        GODOT_VERSIONS="$(echo "$GODOT_VERSIONS" | sed 's/ *$//g')"
+
+        set_config "godot_versions" "$GODOT_VERSIONS"
         ;;
 #H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to compile.
 #H                                        Commit/s: SHA-1 hash/es.
