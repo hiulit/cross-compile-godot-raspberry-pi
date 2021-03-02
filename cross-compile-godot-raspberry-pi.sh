@@ -114,11 +114,16 @@ function set_config() {
   local config_param
   config_name="$1"
   config_param="${@:2}"
+
+  if grep -q "$config_name" "$SCRIPT_CFG"; then
   sed -i "s|^\($config_name\s*=\s*\).*|\1\"$config_param\"|" "$SCRIPT_CFG"
   if [[ "$?" -eq 0 ]]; then
     echo "'$config_name' set to '$config_param' in the config file."
   else
     log "ERROR: Something went wrong when setting '$config_name' to '$config_param'." >&2
+  fi
+  else
+    log "ERROR: Can't set '$config_name'. It doesn't exist in the config file." >&2
   fi
 }
 
