@@ -6,7 +6,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 ## Table of contents
 
-- [Requirements](#dequirements)
+- [Requirements](#requirements)
 - [Dependencies](#dependencies)
 - [Limitations](#limitations)
 - [Setup](#%EF%B8%8F-setup)
