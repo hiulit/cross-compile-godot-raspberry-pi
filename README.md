@@ -70,11 +70,11 @@ Log files are stored in `logs/`.
   - Path (optional): Path to the directory where the files will be stored.
   - Default path: Same folder as this script.
 - `--source-dir [path]`: Sets the Godot source files directory.
-  - Default: Same folder as this script.
+  - Default: `./godot`.
 - `--toolchain-dir [path]`: Sets the Godot toolchain directory.
-  - Default: Same folder as this script.
+  - Default: `./arm-godot-linux-gnueabihf_sdk-buildroot`.
 - `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
-  - Default: Same folder as this script.
+  - Default: `./compiled-binaries`.
 - `--godot-versions [version/s]`: Sets the Godot version/s to compile.
   - Version/s: Use `--get-tags` to see the available versions.
 - `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
@@ -155,19 +155,20 @@ You can edit this file directly, instead of passing all the options mentioned ab
 # Settings for "cross-compile-godot-raspberry-pi.sh".
 
 # Godot source files directory.
-# Default: Same folder as this script.
+# Default: "./godot".
 godot_source_files_dir = ""
 
 # Godot toolchain directory.
-# Default: Same folder as this script.
+# Default: "./arm-godot-linux-gnueabihf_sdk-buildroot".
 godot_toolchain_dir = ""
 
 # Godot compiled binaries directory.
-# Default: Same folder as this script.
+# Default: "./compiled-binaries".
 godot_compiled_binaries_dir = ""
 
 # Godot version/s to compile (separated by blank spaces).
 # Use "--get-tags" to see the available versions.
+# Version/s must end with the suffix "-stable".
 godot_versions = ""
 
 # Godot commit/s to compile (separated by blank spaces).
