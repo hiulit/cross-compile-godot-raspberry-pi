@@ -39,7 +39,7 @@ readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="Cross-compile Godot for the Raspberry Pi"
 readonly SCRIPT_DESCRIPTION="A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux x86_64."
 readonly SCRIPT_CFG="$SCRIPT_DIR/cross-compile-godot-raspberry-pi.cfg"
-readonly LOG_DIR="$SCRIPT_DIR/logs"
+readonly LOG_DIR="$SCRIPT_DIR/logs/cross-compile-godot-raspberry-pi"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
 readonly GODOT_AUDIO_FIX_FILE="drivers/alsa/audio_driver_alsa.cpp"
 
