@@ -477,7 +477,7 @@ function main() {
   mkdir -p "$GODOT_COMPILED_BINARIES_DIR"
 
   # Concatenate versions and commits.
-  GODOT_VERSIONS+=("${GODOT_COMMITS[@]}")
+  GODOT_VERSIONS+=("$GODOT_COMMITS")
 
   IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
   for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
