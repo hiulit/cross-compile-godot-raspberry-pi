@@ -15,7 +15,7 @@
 #
 # Dependencies
 # - curl
-# - libfreetype-dev (only to compile versions 3.1-stable and 3.1.1-stable)
+# - libfreetype-dev (only to compile versions "3.1-stable" and "3.1.1-stable")
 # - git
 # - jq
 # - tar
@@ -116,12 +116,12 @@ function set_config() {
   config_param="${@:2}"
 
   if grep -q "$config_name" "$SCRIPT_CFG"; then
-  sed -i "s|^\($config_name\s*=\s*\).*|\1\"$config_param\"|" "$SCRIPT_CFG"
-  if [[ "$?" -eq 0 ]]; then
-    echo "'$config_name' set to '$config_param' in the config file."
-  else
-    log "ERROR: Something went wrong when setting '$config_name' to '$config_param'." >&2
-  fi
+    sed -i "s|^\($config_name\s*=\s*\).*|\1\"$config_param\"|" "$SCRIPT_CFG"
+    if [[ "$?" -eq 0 ]]; then
+      echo "'$config_name' set to '$config_param' in the config file."
+    else
+      log "ERROR: Something went wrong when setting '$config_name' to '$config_param'." >&2
+    fi
   else
     log "ERROR: Can't set '$config_name'. It doesn't exist in the config file." >&2
   fi
@@ -138,6 +138,7 @@ function get_config() {
 
 
 function check_config() {
+  # Variable names must be the same as the config settings.
   while IFS= read -r line; do
     local config_name
     local config_param
@@ -279,7 +280,7 @@ function get_options() {
         exit 0
         ;;
 #H -sd, --source-dir [path]             Sets the Godot source files directory.
-#H                                        Default: Same folder as this script.
+#H                                        Default: "./godot".
       -sd|--source-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -294,7 +295,7 @@ function get_options() {
         set_config "godot_source_files_dir" "$GODOT_SOURCE_FILES_DIR"
         ;;
 #H -td, --toolchain-dir [path]          Sets the Godot toolchain directory.
-#H                                        Default: Same folder as this script.
+#H                                        Default: "./arm-godot-linux-gnueabihf_sdk-buildroot".
       -td|--toolchain-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -309,7 +310,7 @@ function get_options() {
         set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
         ;;
 #H -bd, --binaries-dir [path]           Sets the Godot compiled binaries directory.
-#H                                        Default: Same folder as this script.
+#H                                        Default: "./compiled-binaries".
       -bd|--binaries-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"
@@ -325,6 +326,7 @@ function get_options() {
         ;;
 #H -gv, --godot-versions [version/s]    Sets the Godot version/s to compile.
 #H                                        Version/s: Use '--get-tags' to see the available versions.
+#H                                        Version/s must end with the suffix "-stable".
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -332,7 +334,7 @@ function get_options() {
         local temp_array="$1"
         local suffix="-stable"
 
-        # Convert string separated by blank spaces to an array.
+        # Convert a string separated by blank spaces to an array.
         IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
         for version in "${temp_array[@]}"; do
           # Append the necessary suffix "-stable" if it's not present.
