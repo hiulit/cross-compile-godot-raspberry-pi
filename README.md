@@ -248,6 +248,7 @@ If you can't, consider sharing it with the world...
 
 Thanks to:
 
+- Juan Linietsky ([@reduz](https://github.com/reduz)), Ariel Manzur ([@punto-](https://github.com/punto-)), Rémi Verschelde ([@akien-mga](https://github.com/akien-mga)) and all the Godot contributors - For creating and maintaining the [Godot Engine](https://github.com/godotengine/godot).
 - [Hein-Pieter van Braam-Stewart](https://github.com/hpvb) - For the [Godot Engine buildroot](https://github.com/godotengine/buildroot), which is the base of this script and for helping me figure out how to use it.
 - [Rémi Verschelde](https://github.com/akien-mga) - For helping me with compilation issues.
 - **Andrea Calabró** - For the Godot logo used on the banner.
