@@ -32,7 +32,7 @@
 #
 # Other limitations:
 #
-# - Raspberry Pi versions "0", "1" and "2" can't be compiled using Link Time Optimization (LTO)
+# - Raspberry Pi versions "0", "1" and "2" can't be compiled using Link Time Optimization (LTO).
 
 
 # Globals ########################################

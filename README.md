@@ -43,7 +43,7 @@ The toolchain this script uses has a few limitations at the moment:
 
 Other limitations:
 
-- Raspberry Pi versions `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO)
+- Raspberry Pi versions `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO).
 
 ## 🛠️ Setup
 
