@@ -218,6 +218,14 @@ use_lto = ""
 
 ## Transfer files to the Raspberry Pi
 
+### Requirements:
+- SSH key pair.
+- SSH passwordless login (optional, but preferable) (https://linuxize.com/post/how-to-setup-passwordless-ssh-login/).
+- Static IP on the Raspberry Pi (optional, but preferable).
+
+### Dependencies
+- `rsync`
+
 ### 🚀 Usage
 
 ```
@@ -254,7 +262,7 @@ Log files are stored in `logs/`.
   - Binary type/s: `editor export-template headless server`.
 - `--auto`: Starts transfering taking the settings in the [config file](#-config-file-1).
 
-## 💁 Examples
+### 💁 Examples
 
 - Transfer:
   - The Godot `editor` (version `3.2.3-stable`).
