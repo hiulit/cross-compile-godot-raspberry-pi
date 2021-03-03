@@ -244,7 +244,7 @@ function get_options() {
         ;;
 #H -gj, --get-jobs                      Prints the number of available jobs/CPUs.
       -gj|--get-jobs)
-        lscpu | egrep 'CPU\(s\)'
+        nproc
         exit 0
         ;;
 #H -d, --download [file] [path]         Downloads the Godot source files or the Godot toolchain.
@@ -386,20 +386,24 @@ function get_options() {
 
         set_config "binaries" "$BINARIES"
         ;;
-#H -j, --scons-jobs [number]            Sets the jobs (CPUs) to use in SCons.
+#H -j, --scons-jobs [number|string]     Sets the jobs (CPUs) to use in SCons.
 #H                                        Number: "1-∞".
+#H                                        String: "all" (use all the available CPUs).
 #H                                        Default: "1".
       -j|--scons-jobs)
         check_argument "$1" "$2" || exit 1
         local option="$1"
         shift
 
-        if ! [[ "$1" =~ ^[0-9]+$ ]]; then
-          echo "ERROR: Argument for '$option' ('"$1"') must be a number." >&2
+        if [[ "$1" == "all" ]]; then
+          SCONS_JOBS="$(nproc)"
+        elif [[ "$1" =~ ^[0-9]+$ ]]; then
+          SCONS_JOBS="$1"
+        else
+          echo "ERROR: Argument for '$option' ('"$1"') must be a number or 'all'." >&2
           exit 1
         fi
 
-        SCONS_JOBS="$1"
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
 #H -l, --use-lto [option]               Enables using Link Time Optimization (LTO) when compiling.

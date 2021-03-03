@@ -101,8 +101,9 @@ Log files are stored in `logs/`.
   - Version/s: `0 1 2 3 4`.
 - `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
   - Binary type/s: `editor export-template headless server`.
-- `--scons-jobs [number]`: Sets the jobs (CPUs) to use in SCons.
+- `--scons-jobs [number|string]`: Sets the jobs (CPUs) to use in SCons.
   - Number: `1-∞`.
+  - String: `all` (use all the available CPUs).
   - Default: `1`.
 - `--use-lto [option]`: Enables using Link Time Optimization (LTO) when compiling.
   - Options: `yes` or `no`.
@@ -143,11 +144,11 @@ Log files are stored in `logs/`.
 - Compile:
   - The Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`).
   - For the Raspberry Pi `3` and `4`.
-  - Using `8` CPU cores.
+  - Using `all` the available CPU cores.
   - With LTO `enabled`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto "yes"
 ```
 
 - Compile:
