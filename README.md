@@ -2,7 +2,7 @@
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/hiulit/cross-compile-godot-raspberry-pi?&style=flat-square) ![GitHub license](https://img.shields.io/github/license/hiulit/cross-compile-godot-raspberry-pi?&style=flat-square)
 
-A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux x86_64.
+A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux x86_64 and an extra script to easily transfer the compiled Godot binaries to the Raspberry Pi using rsync.
 
 ![Cross-compile Godot binaries for the Raspberry Pi](cross-compile-godot-raspberry-pi.jpg)
 
@@ -46,15 +46,16 @@ Other limitations:
 
 ## 🛠️ Setup
 
-### Install the script
+### Install the scripts
 
 ```
 git clone https://github.com/hiulit/cross-compile-godot-raspberry-pi.git
 cd cross-compile-godot-raspberry-pi
 sudo chmod +x cross-compile-godot-raspberry-pi.sh
+sudo chmod +x transfer-files-raspberry-pi.sh
 ```
 
-### Update the script
+### Update the scripts
 
 ```
 cd cross-compile-godot-raspberry-pi
@@ -213,6 +214,10 @@ scons_jobs = ""
 # Default: "no".
 use_lto = ""
 ```
+
+## Transfer files to a Raspberry Pi
+
+
 
 ## 🗒️ Changelog
 

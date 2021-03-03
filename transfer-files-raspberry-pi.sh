@@ -2,7 +2,7 @@
 # transfer-files-raspberry-pi.sh
 #
 # Transfer files to a Raspberry Pi.
-# A script to easily transfer files from a host machine to a Raspberry Pi using rsync.
+# A script to easily transfer the compiled Godot binaries to the Raspberry Pi using rsync.
 #
 # Author: hiulit
 # Repository: https://github.com/hiulit/cross-compile-godot-raspberry-pi
@@ -24,7 +24,7 @@ readonly SCRIPT_DIR="$(cd "$(dirname $0)" && pwd)"
 readonly SCRIPT_NAME="$(basename "$0")"
 readonly SCRIPT_FULL="$SCRIPT_DIR/$SCRIPT_NAME"
 readonly SCRIPT_TITLE="Transfer files to a Raspberry Pi"
-readonly SCRIPT_DESCRIPTION="A script to easily transfer files from a host machine to a Raspberry Pi using rsync."
+readonly SCRIPT_DESCRIPTION="A script to easily transfer the compiled Godot binaries to the Raspberry Pi using rsync."
 readonly SCRIPT_CFG="$SCRIPT_DIR/transfer-files-raspberry-pi.cfg"
 readonly LOG_DIR="$SCRIPT_DIR/logs/transfer-files-raspberry-pi"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
