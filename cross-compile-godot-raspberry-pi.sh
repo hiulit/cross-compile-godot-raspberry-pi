@@ -326,7 +326,7 @@ function get_options() {
         ;;
 #H -gv, --godot-versions [version/s]    Sets the Godot version/s to compile.
 #H                                        Version/s: Use '--get-tags' to see the available versions.
-#H                                        Version/s must end with the suffix "-stable".
+#H                                        Version/s must end with the suffix "-stable", except for "master".
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -337,9 +337,11 @@ function get_options() {
         # Convert a string separated by blank spaces to an array.
         IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
         for version in "${temp_array[@]}"; do
+          if [[ "$version" != "master" ]]; then
           # Append the necessary suffix "-stable" if it's not present.
           if ! [[ "$version" =~ "$suffix" ]]; then
             version+="$suffix " # Note the trailing blank space.
+          fi
           fi
           GODOT_VERSIONS+="$version"
         done

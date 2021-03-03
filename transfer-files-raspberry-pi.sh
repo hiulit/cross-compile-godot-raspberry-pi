@@ -222,7 +222,7 @@ function get_options() {
         set_config "remote_ip" "$REMOTE_IP"
         ;;
 #H -gv, --godot-versions [version/s]    Sets the Godot version/s to transfer.
-#H                                        Version/s must end with the suffix "-stable".
+#H                                        Version/s must end with the suffix "-stable", except for "master".
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -233,9 +233,11 @@ function get_options() {
         # Convert a string separated by blank spaces to an array.
         IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
         for version in "${temp_array[@]}"; do
-          # Append the necessary suffix "-stable" if it's not present.
-          if ! [[ "$version" =~ "$suffix" ]]; then
-            version+="$suffix " # Note the trailing blank space.
+          if [[ "$version" != "master" ]]; then
+            # Append the necessary suffix "-stable" if it's not present.
+            if ! [[ "$version" =~ "$suffix" ]]; then
+              version+="$suffix " # Note the trailing blank space.
+            fi
           fi
           GODOT_VERSIONS+="$version"
         done
