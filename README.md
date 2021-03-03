@@ -259,3 +259,4 @@ Thanks to:
 ## 📝 Licenses
 
 - Source code: [MIT License](/LICENSE).
+- Godot - Game Engine: [MIT License](/LICENSE_GODOT.txt).
