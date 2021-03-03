@@ -338,10 +338,10 @@ function get_options() {
         IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
         for version in "${temp_array[@]}"; do
           if [[ "$version" != "master" ]]; then
-          # Append the necessary suffix "-stable" if it's not present.
-          if ! [[ "$version" =~ "$suffix" ]]; then
-            version+="$suffix " # Note the trailing blank space.
-          fi
+            # Append the necessary suffix "-stable" if it's not present.
+            if ! [[ "$version" =~ "$suffix" ]]; then
+              version+="$suffix " # Note the trailing blank space.
+            fi
           fi
           GODOT_VERSIONS+="$version"
         done
@@ -522,32 +522,40 @@ function main() {
 
       apply_audio_fix
 
+      # As of Godot 4.0, the Linux platform changed from "x11" to "linuxbsd".
+      local godot_platform
+      if [[ "$(version "$godot_version")" -ge "$(version 4.0-stable)" ]] || [[ "$godot_version" == "master" ]]; then
+        godot_platform="linuxbsd"
+      else
+        godot_platform="x11"
+      fi
+
       IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
       for binary_type in "${BINARIES[@]}"; do
         case "$binary_type" in
           "editor")
             GODOT_TOOLS="yes"
             GODOT_TARGET="release_debug"
-            GODOT_PLATFORM="x11"
-            GODOT_BINARY_NAME="godot.x11.opt.tools.64"
+            GODOT_PLATFORM="$godot_platform"
+            GODOT_BINARY_NAME="godot.$GODOT_PLATFORM.opt.tools.64"
             ;;
           "export-template")
             GODOT_TOOLS="no"
             GODOT_TARGET="release"
-            GODOT_PLATFORM="x11"
-            GODOT_BINARY_NAME="godot.x11.opt.64"
+            GODOT_PLATFORM="$godot_platform"
+            GODOT_BINARY_NAME="godot.$GODOT_PLATFORM.opt.64"
             ;;
           "headless")
             GODOT_TOOLS="yes"
             GODOT_TARGET="release_debug"
             GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.x11.opt.tools.64"
+            GODOT_BINARY_NAME="godot_server.$GODOT_PLATFORM.opt.tools.64"
             ;;
           "server")
             GODOT_TOOLS="no"
             GODOT_TARGET="release"
             GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.x11.opt.64"
+            GODOT_BINARY_NAME="godot_server.$GODOT_PLATFORM.opt.64"
             ;;
         esac
 
