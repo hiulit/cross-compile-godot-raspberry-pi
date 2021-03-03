@@ -16,6 +16,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 - [Options](#-options)
 - [Examples](#-examples)
 - [Config file](#-config-file)
+- [Transfer files to the Raspberry Pi](#transfer-files-to-the-raspberry-pi)
 
 ## Requirements:
 
@@ -215,9 +216,85 @@ scons_jobs = ""
 use_lto = ""
 ```
 
-## Transfer files to a Raspberry Pi
+## Transfer files to the Raspberry Pi
 
+### 🚀 Usage
 
+```
+./transfer-files-raspberry-pi.sh [OPTIONS]
+```
+
+If no options are passed, you will be prompted with a usage example:
+
+```
+USAGE: ./transfer-files-raspberry-pi.sh [OPTIONS]
+
+Use './transfer-files-raspberry-pi.sh --help' to see all the options.
+```
+
+Log files are stored in `logs/`.
+
+### 📖 Options
+
+- `--help`: Prints the help message.
+- `--version`: Prints the script version.
+- `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
+  - Default: `./compiled-binaries`.
+- `--remote-dir [path]`: Sets the Raspberry Pi directory where the files will be transfered.
+  - Default: `/home/pi/godot-binaries/` (note the trailing slash!).
+- `--remote-username [username]`: Sets the username of the Raspberry Pi.
+- `--remote-ip [IP]`: Sets the IP of the Raspberry Pi.
+- `--godot-versions [version/s]`: Sets the Godot version/s to compile.
+  - Version/s must end with the suffix `-stable`, except for `master`..
+- `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
+  - Commit/s: SHA-1 hash/es.
+- `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
+  - Version/s: `0 1 2 3 4`.
+- `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
+  - Binary type/s: `editor export-template headless server`.
+- `--auto`: Starts transfering taking the settings in the [config file](#config-file).
+
+### 📋 Config file
+
+You can edit this file directly, instead of passing all the options mentioned above, and then run:
+
+```
+./transfer-files-raspberry-pi.sh --auto
+```
+
+```
+# Settings for "transfer-files-raspberry-pi.sh".
+
+# Godot compiled binaries directory.
+# Default: "./compiled-binaries".
+godot_compiled_binaries_dir = ""
+
+# Raspberry Pi directory where the files will be transfered.
+# Default: "/home/pi/godot-binaries/" (note the trailing slash!).
+remote_dir = ""
+
+# Username of the Raspberry Pi
+remote_username = ""
+
+# IP of the Raspberry Pi
+remote_ip = ""
+
+# Godot version/s to be transfered (separated by blank spaces).
+# Version/s must end with the suffix "-stable", except for "master".
+godot_versions = ""
+
+# Godot commit/s to transfer (separated by blank spaces).
+# Commit/s: SHA-1 hash/es.
+godot_commits = ""
+
+# Raspberry Pi version/s to transfer (separated by blank spaces).
+# Version/s: "0 1 2 3 4".
+raspberry_pi_versions = ""
+
+# Types of Godot binaries to transfer (separated by blank spaces).
+# Binary type/s: "editor export-template headless server".
+binaries = ""
+```
 
 ## 🗒️ Changelog
 
