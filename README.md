@@ -110,7 +110,7 @@ Log files are stored in `logs/`.
 - `--use-lto [option]`: Enables using Link Time Optimization (LTO) when compiling.
   - Options: `yes` or `no`.
   - Default: `no`.
-- `--auto`: Starts compiling taking the settings in the [config file](#config-file).
+- `--auto`: Starts compiling taking the settings in the [config file](#-config-file).
 
 ## 💁 Examples
 
@@ -252,7 +252,28 @@ Log files are stored in `logs/`.
   - Version/s: `0 1 2 3 4`.
 - `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
   - Binary type/s: `editor export-template headless server`.
-- `--auto`: Starts transfering taking the settings in the [config file](#config-file).
+- `--auto`: Starts transfering taking the settings in the [config file](#-config-file-1).
+
+## 💁 Examples
+
+- Transfer:
+  - The Godot `editor` (version `3.2.3-stable`).
+  - For the Raspberry Pi `4`.
+  - To the Raspberry Pi with the username `pi` and the IP `192.168.1.100`.
+
+```
+./transfer-files-raspberry-pi.sh --remote-username "pi" --remote-ip "192.168.1.100" --godot-versions "3.2.3-stable" --rpi-versions "4" --binaries "editor"
+```
+
+- Transfer:
+  - The Godot `editor` (version `3.2.3-stable`).
+  - For the Raspberry Pi `4`.
+  - To the Raspberry Pi with the username `pi` and the IP `192.168.1.100`.
+  - And store the files in `/path/to/the/folder/` (note the trailing slash!).
+
+```
+./transfer-files-raspberry-pi.sh --remote-username "pi" --remote-ip "192.168.1.100" --godot-versions "3.2.3-stable" --rpi-versions "4" --binaries "editor" --remote-dir "/path/to/the/folder/"
+```
 
 ### 📋 Config file
 
