@@ -20,7 +20,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 ## Requirements:
 
 - [Godot source files](https://github.com/godotengine/godot) (can be downloaded with this script).
-- [Godot dependecies to compile for X11 Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html).
+- [Godot dependecies to compile for Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html).
 - [Godot toolchain to cross-compile for ARM](https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script).
 
 ## Dependencies
@@ -34,10 +34,15 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 ## Limitations
 
-- The toolchain this script uses only supports cross-compilation for `32 bit` binaries.
-- Unable to compile Godot `2.x` because it requires `gcc < 6` and the toolchain this script uses only has `gcc 10.2`.
+The toolchain this script uses has a few limitations at the moment:
+
+- Only supports cross-compilation for `32 bit` binaries.
+- Can't compile Godot `2.x` because it requires `gcc < 6` and the toolchain only has `gcc 10.2`.
 - Godot `3.1-stable` and `3.1.1-stable` need an extra dependency (`libfreetype-dev`) to be able to be compiled.
-- Raspberry Pi `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO)
+
+Other limitations:
+
+- Raspberry Pi versions `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO)
 
 ## 🛠️ Setup
 
