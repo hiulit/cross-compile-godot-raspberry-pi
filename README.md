@@ -249,6 +249,11 @@ If you can't, consider sharing it with the world...
 Thanks to:
 
 - [Hein-Pieter van Braam-Stewart](https://github.com/hpvb) - For the [Godot Engine buildroot](https://github.com/godotengine/buildroot), which is the base of this script and for helping me figure out how to use it.
+- [Rémi Verschelde](https://github.com/akien-mga) - For helping me with compilation issues.
+- **Andrea Calabró** - For the Godot logo used on the banner.
+- [Ery Prihananto](https://es.vecteezy.com/arte-vectorial/105957-vector-libre-de-la-cpu) - For the CPU image used on the banner.
+- [worldvectorlogo](https://worldvectorlogo.com/es/logo/tux) - For the Tux image used on the banner.
+- [Raspberry Pi Foundation](https://www.raspberrypi.org/) - For the Raspberry Pi logo used on the banner.
 
 ## 📝 Licenses
 
