@@ -187,7 +187,7 @@ godot_compiled_binaries_dir = ""
 
 # Godot version/s to compile (separated by blank spaces).
 # Use "--get-tags" to see the available versions.
-# Version/s must end with the suffix "-stable", except for `master`.
+# Version/s must end with the suffix "-stable", except for "master".
 godot_versions = ""
 
 # Godot commit/s to compile (separated by blank spaces).
@@ -204,6 +204,7 @@ binaries = ""
 
 # Jobs (CPUs) to use in SCons.
 # Number: "1-∞".
+# String: "all" (use all the available CPUs).
 # Default: "1".
 scons_jobs = ""
 
