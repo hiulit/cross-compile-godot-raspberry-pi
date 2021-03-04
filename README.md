@@ -378,4 +378,4 @@ Thanks to:
 
 - Source code: [MIT License](/LICENSE).
 - Godot - Game Engine: [MIT License](/LICENSE_GODOT.txt).
-- Godot logo: [CC-BY-4.0 International](https://creativecommons.org/licenses/by/4.0/)
+- Godot logo: [CC-BY-4.0 International](https://creativecommons.org/licenses/by/4.0/).
