@@ -188,22 +188,16 @@ function ctrl_c() {
 
 function apply_audio_fix() {
   # Apply audio fix. See https://github.com/godotengine/godot/pull/43928.
-  if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
+  if [[ "$godot_version" != "master" ]] && [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
     sed -i "s/uint8_t/int16_t/gi" "$GODOT_SOURCE_FILES_DIR/$GODOT_AUDIO_FIX_FILE"
-    # if [[ "$?" -eq 0 ]]; then
-    #   echo "Audio fix applied."
-    # fi
   fi
 }
 
 
 function remove_audio_fix() {
   # Revert the audio fix to prevent git issues.
-  if [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
+  if [[ "$godot_version" != "master" ]] && [[ "$(version "$godot_version")" -lt "$(version 3.2.4-stable)" ]]; then
     sed -i "s/int16_t/uint8_t/gi" "$GODOT_SOURCE_FILES_DIR/$GODOT_AUDIO_FIX_FILE"
-    # if [[ "$?" -eq 0 ]]; then
-    #   echo "Audio fix removed."
-    # fi
   fi
 }
 
