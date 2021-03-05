@@ -60,6 +60,7 @@ SCONS_JOBS="1"
 USE_LTO="no"
 
 GCC_VERBOSE="yes"
+VERSIONS_SUFFIX="-stable"
 
 CCFLAGS=""
 GODOT_TOOLS=""
@@ -163,6 +164,28 @@ function check_config() {
     config_param="${config_param#\"}"
 
     if [[ -n "$config_param" ]]; then
+      if [[ "$config_name" == "GODOT_VERSIONS" ]]; then
+        local temp_array="$config_param"
+        local temp_config_param
+
+        # Convert a string separated by blank spaces to an array.
+        IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
+        for version in "${temp_array[@]}"; do
+          if [[ "$version" != "master" ]]; then
+            # Append the necessary suffix "-stable" if it's not present.
+            if ! [[ "$version" =~ "$VERSIONS_SUFFIX" ]]; then
+              version+="$VERSIONS_SUFFIX"
+            fi
+          fi
+          temp_config_param+="$version " # Note the trailing blank space!
+        done
+
+        config_param="$temp_config_param"
+
+        # Remove trailing blank space.
+        config_param="$(echo "$config_param" | sed 's/ *$//g')"
+      fi
+
       eval "$config_name"="\$config_param"
       # echo "${config_name}"
       # echo "${!config_name}"
@@ -329,18 +352,17 @@ function get_options() {
         shift
 
         local temp_array="$1"
-        local suffix="-stable"
 
         # Convert a string separated by blank spaces to an array.
         IFS=" " read -r -a temp_array <<< "${temp_array[@]}"
         for version in "${temp_array[@]}"; do
           if [[ "$version" != "master" ]]; then
             # Append the necessary suffix "-stable" if it's not present.
-            if ! [[ "$version" =~ "$suffix" ]]; then
-              version+="$suffix " # Note the trailing blank space.
+            if ! [[ "$version" =~ "$VERSIONS_SUFFIX" ]]; then
+              version+="$VERSIONS_SUFFIX"
             fi
           fi
-          GODOT_VERSIONS+="$version"
+          GODOT_VERSIONS+="$version " # Note the trailing blank space!
         done
 
         # Remove trailing blank space.
