@@ -164,6 +164,10 @@ function check_config() {
     config_param="${config_param#\"}"
 
     if [[ -n "$config_param" ]]; then
+      if [[ "$config_name" == "SCONS_JOBS" ]] && [[ "$config_param" == "all" ]]; then
+        config_param="$(nproc)"
+      fi
+
       if [[ "$config_name" == "GODOT_VERSIONS" ]]; then
         local temp_array="$config_param"
         local temp_config_param
