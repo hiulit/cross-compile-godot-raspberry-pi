@@ -15,7 +15,6 @@
 #
 # Dependencies
 # - curl
-# - libfreetype-dev (only to compile versions "3.1-stable" and "3.1.1-stable")
 # - git
 # - jq
 # - tar
@@ -28,7 +27,6 @@
 #
 # - Only supports cross-compilation for "32 bit" binaries.
 # - Can't compile Godot "2.x" because it requires "gcc < 6" and the toolchain only has "gcc 10.2".
-# - Godot "3.1-stable" and "3.1.1-stable" need an extra dependency ("libfreetype-dev") to be able to be compiled.
 #
 # Other limitations:
 #
@@ -572,8 +570,12 @@ function main() {
 
         cd "$GODOT_SOURCE_FILES_DIR"
 
+        # Force "builtin_freetype" because versions 3.1 and 3.1.1 need it.
+
         log ">> Cleaning SCons ..."
-        scons --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
+        scons \
+        builtin_freetype=yes \
+        --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
           remove_audio_fix
@@ -588,6 +590,7 @@ function main() {
         platform="$GODOT_PLATFORM" \
         tools="$GODOT_TOOLS" \
         target="$GODOT_TARGET" \
+        builtin_freetype=yes \
         use_lto="$use_lto" \
         use_static_cpp=yes \
         CCFLAGS="$CCFLAGS" \

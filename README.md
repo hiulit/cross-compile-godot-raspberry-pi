@@ -26,7 +26,6 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 ## Dependencies
 - `curl`
-- `libfreetype-dev` (only to compile versions `3.1-stable` and `3.1.1-stable`)
 - `git`
 - `jq`
 - `tar`
@@ -39,7 +38,6 @@ The toolchain this script uses has a few limitations at the moment:
 
 - Only supports cross-compilation for `32 bit` binaries.
 - Can't compile Godot `2.x` because it requires `gcc < 6` and the toolchain only has `gcc 10.2`.
-- Godot `3.1-stable` and `3.1.1-stable` need an extra dependency (`libfreetype-dev`) to be able to be compiled.
 
 Other limitations:
 
