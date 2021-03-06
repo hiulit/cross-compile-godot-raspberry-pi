@@ -564,25 +564,25 @@ function main() {
             GODOT_TOOLS="yes"
             GODOT_TARGET="release_debug"
             GODOT_PLATFORM="$godot_platform"
-            GODOT_BINARY_NAME="godot.$GODOT_PLATFORM.opt.tools.64"
+            GODOT_BINARY_NAME="godot.${godot_platform}.opt.tools.64"
             ;;
           "export-template")
             GODOT_TOOLS="no"
             GODOT_TARGET="release"
             GODOT_PLATFORM="$godot_platform"
-            GODOT_BINARY_NAME="godot.$GODOT_PLATFORM.opt.64"
+            GODOT_BINARY_NAME="godot.${godot_platform}.opt.64"
             ;;
           "headless")
             GODOT_TOOLS="yes"
             GODOT_TARGET="release_debug"
             GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.$GODOT_PLATFORM.opt.tools.64"
+            GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.tools.64"
             ;;
           "server")
             GODOT_TOOLS="no"
             GODOT_TARGET="release"
             GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.$GODOT_PLATFORM.opt.64"
+            GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.64"
             ;;
         esac
 
