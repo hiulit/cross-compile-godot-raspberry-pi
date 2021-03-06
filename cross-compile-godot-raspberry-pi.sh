@@ -598,6 +598,7 @@ function main() {
         --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
+          log >&2
           remove_audio_fix
           continue
         fi
@@ -619,6 +620,7 @@ function main() {
         module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when compiling Godot." >&2
+          log >&2
           remove_audio_fix
           continue
         fi
@@ -639,6 +641,7 @@ function main() {
         mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
+          log >&2
           remove_audio_fix
           continue
         fi
@@ -648,6 +651,7 @@ function main() {
         "$GODOT_TOOLCHAIN_DIR"/bin/arm-godot-linux-gnueabihf-strip "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when stripping the debug symbols of '$binary_name.bin'." >&2
+          log >&2
           remove_audio_fix
         else
         log "> Done!"
