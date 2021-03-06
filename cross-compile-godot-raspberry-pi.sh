@@ -544,7 +544,8 @@ function main() {
       git checkout --quiet "$godot_version"
       if ! [[ "$?" -eq 0 ]]; then
         log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
-        continue
+        log >&2
+        exit
       fi
 
       apply_audio_fix
