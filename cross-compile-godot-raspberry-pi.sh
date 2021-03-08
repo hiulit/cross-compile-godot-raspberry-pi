@@ -58,6 +58,7 @@ RASPBERRY_PI_VERSIONS=""
 BINARIES=""
 SCONS_JOBS="1"
 USE_LTO="no"
+PACK="no"
 
 GCC_VERBOSE="yes"
 VERSIONS_SUFFIX="-stable"
@@ -67,7 +68,7 @@ GODOT_TOOLS=""
 GODOT_TARGET=""
 GODOT_PLATFORM=""
 GODOT_BINARY_NAME=""
-
+PACK_DIR=""
 
 # Functions #####################################
 
@@ -440,6 +441,22 @@ function get_options() {
         USE_LTO="$1"
         set_config "use_lto" "$USE_LTO"
         ;;
+#H -p, --pack [option]                  Packs all the binaries of the same Raspberry Pi version in one zip file.
+#H                                        Options: "yes" or "no"
+#H                                        Default: "no".
+      -p|--pack)
+        check_argument "$1" "$2" || exit 1
+        local option="$1"
+        shift
+
+        if [[ "$1" != "yes" ]] && [[ "$1" != "no" ]]; then
+          echo "ERROR: Argument for '$option' ('"$1"') must be 'yes' or 'no'." >&2
+          exit 1
+        fi
+
+        PACK="$1"
+        set_config "pack" "$PACK"
+        ;;
 #H -a, --auto                           Starts compiling taking the settings in the config file.
       -a|--auto)
         check_config
@@ -500,10 +517,12 @@ function main() {
   log "Raspberry Pi version/s to compile: $RASPBERRY_PI_VERSIONS"
   log "SCons jobs: $SCONS_JOBS"
   log "Use LTO: $USE_LTO"
+  log "Pack: $PACK"
   log "----------"
   log
 
   mkdir -p "$GODOT_COMPILED_BINARIES_DIR"
+
 
   # Concatenate versions and commits.
   GODOT_VERSIONS+=("$GODOT_COMMITS")
@@ -525,15 +544,20 @@ function main() {
         ;;
     esac
 
-    local use_lto="$USE_LTO"
+    # Create a folder to pack all the binaries of the same Raspberry Pi version.
+    if [[ "$PACK" == "yes" ]]; then
+      PACK_DIR="$GODOT_COMPILED_BINARIES_DIR/godot_rpi${rpi_version}"
+      mkdir -p "$PACK_DIR"
+    fi
 
     # Disable LTO for some Raspberry Pi versions.
+    local use_lto="$USE_LTO"
     if [[ "$rpi_version" -lt 3 ]] && [[ "$USE_LTO" == "yes" ]]; then
       use_lto="no"
     fi
 
+    # Disable all gcc output (+ warnings and notes).
     if [[ "$GCC_VERBOSE" == "no" ]]; then
-      # Disable warnings and notes.
       CCFLAGS+=" -w -fcompare-debug-second"
     fi
 
@@ -630,7 +654,6 @@ function main() {
         cd "$GODOT_SOURCE_FILES_DIR/bin"
 
         local binary_name
-
         if [[ "$use_lto" == "yes" ]]; then
           binary_name="godot_${godot_version}_rpi${rpi_version}_${binary_type}_lto"
         else
@@ -655,28 +678,55 @@ function main() {
           log >&2
           remove_audio_fix
         else
-        log "> Done!"
+          log "> Done!"
         fi
 
-        log ">> Compressing '$binary_name.bin' ..."
-        zip -j "$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-        if [[ "$?" -eq 0 ]]; then
-          rm "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-          log "> Done!"
+        # Prepare the binaries of the same Raspberry Pi version to be packed in one zip file.
+        if [[ "$PACK" == "yes" ]]; then
+          mv "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin" "$PACK_DIR"
+        # Zip each binary separately.
         else
-          log "ERROR: Something went wrong when compressing '$binary_name.bin'." >&2
-          remove_audio_fix
+          log ">> Compressing '$binary_name.bin' ..."
+          zip -j "$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+          if [[ "$?" -eq 0 ]]; then
+            rm "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+            log "> Done!"
+            log
+            log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip'."
+          else
+            log "ERROR: Something went wrong when compressing '$binary_name.bin'." >&2
+            log >&2
+            remove_audio_fix
+          fi
         fi
 
         log
         log "The Godot '$binary_type' ('$godot_version') for the Raspberry Pi '$rpi_version' was compiled successfully!"
         log
-        log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip'."
-        log
       done
 
       remove_audio_fix
     done
+
+    # Pack all the binaries of the same Raspberry Pi version (if the folder is not empty).
+    if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $DIR)" ]]; then
+      log "##################################################"
+      log
+      log ">> Packing all the binaries for the Raspberry Pi '$rpi_version' ..."
+      zip -j -r "$PACK_DIR.zip" "$PACK_DIR"
+      if [[ "$?" -eq 0 ]]; then
+        rm -rf "$PACK_DIR"
+        log "> Done!"
+        log
+        log "You can find them at '$PACK_DIR.zip'."
+        log
+        log "##################################################"
+      else
+        log "ERROR: Something went wrong when packing the binaries for the Raspberry Pi '$rpi_version'." >&2
+      fi
+
+      log
+    fi
   done
 }
 

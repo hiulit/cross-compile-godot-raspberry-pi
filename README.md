@@ -108,6 +108,9 @@ Log files are stored in `logs/`.
 - `--use-lto [option]`: Enables using Link Time Optimization (LTO) when compiling.
   - Options: `yes` or `no`.
   - Default: `no`.
+- `--pack [option]`: Packs all the binaries of the same Raspberry Pi version.
+  - Options: `yes` or `no`.
+  - Default: `no`.
 - `--auto`: Starts compiling taking the settings in the [config file](#-config-file).
 
 ## 💁 Examples
@@ -135,7 +138,6 @@ Log files are stored in `logs/`.
   - For the Raspberry Pi `3` and `4`.
   - Using `8` CPU cores.
   - With `LTO enabled`.
-
 
 ```
 ./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --rpi-versions "3 4" --binaries "editor" --scons-jobs "4" --use-lto "yes"
@@ -212,6 +214,11 @@ scons_jobs = ""
 # Options: "yes" or "no".
 # Default: "no".
 use_lto = ""
+
+# Pack all the binaries of the same Raspberry Pi version in one zip file in one zip file.
+# Options: "yes" or "no".
+# Default: "no".
+pack = ""
 ```
 
 ## Transfer files to the Raspberry Pi
