@@ -486,21 +486,20 @@ function main() {
 
   log
   log "----------"
-  log "Godot source files directory: $GODOT_SOURCE_FILES_DIR"
-  log "Godot toolchain directory: $GODOT_TOOLCHAIN_DIR"
-  log "Godot compiled binaries directory: $GODOT_COMPILED_BINARIES_DIR"
-  log "Godot version/s to compile: $GODOT_VERSIONS"
-  log "Godot commit/s to compile: $GODOT_COMMITS"
-  log "Binaries to compile: $BINARIES"
-  log "Raspberry Pi version/s to compile: $RASPBERRY_PI_VERSIONS"
-  log "SCons jobs: $SCONS_JOBS"
-  log "Use LTO: $USE_LTO"
-  log "Pack: $PACK"
+  log "Godot source files directory: \"$GODOT_SOURCE_FILES_DIR\""
+  log "Godot toolchain directory: \"$GODOT_TOOLCHAIN_DIR\""
+  log "Godot compiled binaries directory: \"$GODOT_COMPILED_BINARIES_DIR\""
+  log "Godot version/s to compile: \"$GODOT_VERSIONS\""
+  log "Godot commit/s to compile: \"$GODOT_COMMITS\""
+  log "Binaries to compile: \"$BINARIES\""
+  log "Raspberry Pi version/s to compile: \"$RASPBERRY_PI_VERSIONS\""
+  log "SCons jobs: \"$SCONS_JOBS\""
+  log "Use LTO: \"$USE_LTO\""
+  log "Pack: \"$PACK\""
   log "----------"
   log
 
   mkdir -p "$GODOT_COMPILED_BINARIES_DIR"
-
 
   # Concatenate versions and commits.
   GODOT_VERSIONS+=("$GODOT_COMMITS")
