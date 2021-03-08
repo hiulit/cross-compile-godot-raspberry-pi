@@ -425,36 +425,14 @@ function get_options() {
 
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
-#H -l, --use-lto [option]               Enables using Link Time Optimization (LTO) when compiling.
-#H                                        Options: "yes" or "no".
-#H                                        Default: "no".
+#H -L, --use-lto                        Enables using Link Time Optimization (LTO) when compiling.
       -l|--use-lto)
-        check_argument "$1" "$2" || exit 1
-        local option="$1"
-        shift
-
-        if [[ "$1" != "yes" ]] && [[ "$1" != "no" ]]; then
-          echo "ERROR: Argument for '$option' ('"$1"') must be 'yes' or 'no'." >&2
-          exit 1
-        fi
-
-        USE_LTO="$1"
+        USE_LTO="yes"
         set_config "use_lto" "$USE_LTO"
         ;;
-#H -p, --pack [option]                  Packs all the binaries of the same Raspberry Pi version in one zip file.
-#H                                        Options: "yes" or "no"
-#H                                        Default: "no".
+#H -P, --pack                           Packs all the binaries of the same Raspberry Pi version.
       -p|--pack)
-        check_argument "$1" "$2" || exit 1
-        local option="$1"
-        shift
-
-        if [[ "$1" != "yes" ]] && [[ "$1" != "no" ]]; then
-          echo "ERROR: Argument for '$option' ('"$1"') must be 'yes' or 'no'." >&2
-          exit 1
-        fi
-
-        PACK="$1"
+        PACK="yes"
         set_config "pack" "$PACK"
         ;;
 #H -a, --auto                           Starts compiling taking the settings in the config file.
@@ -488,7 +466,7 @@ function main() {
     ((errors+=1))
   fi
 
-  if [[ -z "$BINARIES" ]]; then
+  if [[ -z "$BINARIES" ]]; thensame Raspberry Pi version
     log >&2
     log "ERROR: At least one type of Godot binary must be set to compile." >&2
     ((errors+=1))

@@ -105,12 +105,8 @@ Log files are stored in `logs/`.
   - Number: `1-∞`.
   - String: `all` (use all the available CPUs).
   - Default: `1`.
-- `--use-lto [option]`: Enables using Link Time Optimization (LTO) when compiling.
-  - Options: `yes` or `no`.
-  - Default: `no`.
-- `--pack [option]`: Packs all the binaries of the same Raspberry Pi version.
-  - Options: `yes` or `no`.
-  - Default: `no`.
+- `--use-lto`: Enables using Link Time Optimization (LTO) when compiling.
+- `--pack`: Packs all the binaries of the same Raspberry Pi version.
 - `--auto`: Starts compiling taking the settings in the [config file](#-config-file).
 
 ## 💁 Examples
@@ -140,7 +136,7 @@ Log files are stored in `logs/`.
   - With `LTO enabled`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --rpi-versions "3 4" --binaries "editor" --scons-jobs "4" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --godot-versions "3.2.3-stable" --rpi-versions "3 4" --binaries "editor" --scons-jobs "4" --use-lto
 ```
 
 - Compile:
@@ -150,7 +146,7 @@ Log files are stored in `logs/`.
   - With LTO `enabled`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto
 ```
 
 - Compile:
@@ -161,7 +157,7 @@ Log files are stored in `logs/`.
   - Where the Godot source files are located in `/path/to/the/godot/source/files`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto
 ```
 
 ## 📋 Config file
@@ -211,13 +207,11 @@ binaries = ""
 scons_jobs = ""
 
 # Use Link Time Optimization (LTO) when compiling.
-# Options: "yes" or "no".
-# Default: "no".
+# Option: "yes".
 use_lto = ""
 
-# Pack all the binaries of the same Raspberry Pi version in one zip file in one zip file.
-# Options: "yes" or "no".
-# Default: "no".
+# Pack all the binaries of the same Raspberry Pi version.
+# Option: "yes".
 pack = ""
 ```
 
