@@ -154,12 +154,12 @@ Log files are stored in `logs/`.
 - Compile:
   - The Godot `editor` and the `export templates` (versions `3.1.2-stable` and `3.2.3-stable`).
   - For the Raspberry Pi `3` and `4`.
-  - Using `8` CPU cores.
+  - Using `all` the available CPU cores.
   - With `LTO enabled`.
   - Where the Godot source files are located in `/path/to/the/godot/source/files`.
 
 ```
-./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "8" --use-lto "yes"
+./cross-compile-godot-raspberry-pi.sh --source-dir "/path/to/the/godot/source/files" --godot-versions "3.1.2-stable 3.2.3-stable" --rpi-versions "3 4" --binaries "editor export-template" --scons-jobs "all" --use-lto "yes"
 ```
 
 ## 📋 Config file
