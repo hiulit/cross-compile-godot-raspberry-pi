@@ -106,7 +106,7 @@ Log files are stored in `logs/`.
   - String: `all` (use all the available CPUs).
   - Default: `1`.
 - `--use-lto`: Enables using Link Time Optimization (LTO) when compiling.
-- `--pack`: Packs all the binaries of the same Raspberry Pi version.
+- `--pack`: Packs all the binaries of the same Godot version and the same Raspberry Pi version.
 - `--auto`: Starts compiling taking the settings in the [config file](#-config-file).
 
 ## 💁 Examples

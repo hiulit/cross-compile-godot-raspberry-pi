@@ -430,7 +430,7 @@ function get_options() {
         USE_LTO="yes"
         set_config "use_lto" "$USE_LTO"
         ;;
-#H -P, --pack                           Packs all the binaries of the same Raspberry Pi version.
+#H -P, --pack                           Packs all the binaries of the same Godot version and the same Raspberry Pi version.
       -P|--pack)
         PACK="yes"
         set_config "pack" "$PACK"
