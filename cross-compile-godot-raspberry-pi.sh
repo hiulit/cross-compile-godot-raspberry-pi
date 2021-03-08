@@ -466,7 +466,7 @@ function main() {
     ((errors+=1))
   fi
 
-  if [[ -z "$BINARIES" ]]; thensame Raspberry Pi version
+  if [[ -z "$BINARIES" ]]; then
     log >&2
     log "ERROR: At least one type of Godot binary must be set to compile." >&2
     ((errors+=1))
