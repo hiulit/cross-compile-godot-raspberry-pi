@@ -11,6 +11,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 - [Requirements](#requirements)
 - [Dependencies](#dependencies)
 - [Limitations](#limitations)
+- [Pre-compiled binaries](#pre-compiled-binaries)
 - [Setup](#%EF%B8%8F-setup)
 - [Usage](#-usage)
 - [Options](#-options)
@@ -42,6 +43,10 @@ The toolchain this script uses has a few limitations at the moment:
 Other limitations:
 
 - Raspberry Pi versions `0`, `1` and `2` can't be compiled using Link Time Optimization (LTO).
+
+## 🤖 Pre-compiled binaries
+
+There's a good chance that if you came to this repository you want to compile yout own Godot binaries. But if you just want to get pre-compiled binaries, I have another repository with [unofficial Godot binaries for the Raspberry Pi](https://github.com/hiulit/Unofficial-Godot-Engine-Raspberry-Pi).
 
 ## 🛠️ Setup
 
