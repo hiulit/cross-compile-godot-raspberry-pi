@@ -46,7 +46,7 @@ Other limitations:
 
 ## 🤖 Pre-compiled binaries
 
-There's a good chance that if you came to this repository you want to compile yout own Godot binaries. But if you just want to get pre-compiled binaries, I have another repository with [unofficial Godot binaries for the Raspberry Pi](https://github.com/hiulit/Unofficial-Godot-Engine-Raspberry-Pi).
+There's a good chance that if you came to this repository you want to compile your own Godot binaries. But if you just want to get pre-compiled binaries, I have another repository with [unofficial Godot binaries for the Raspberry Pi](https://github.com/hiulit/Unofficial-Godot-Engine-Raspberry-Pi).
 
 ## 🛠️ Setup
 
