@@ -426,7 +426,7 @@ function get_options() {
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
 #H -L, --use-lto                        Enables using Link Time Optimization (LTO) when compiling.
-      -l|--use-lto)
+      -L|--use-lto)
         USE_LTO="yes"
         set_config "use_lto" "$USE_LTO"
         ;;
