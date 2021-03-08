@@ -522,12 +522,6 @@ function main() {
         ;;
     esac
 
-    # Create a folder to pack all the binaries of the same Raspberry Pi version.
-    if [[ "$PACK" == "yes" ]]; then
-      PACK_DIR="$GODOT_COMPILED_BINARIES_DIR/godot_rpi${rpi_version}"
-      mkdir -p "$PACK_DIR"
-    fi
-
     # Disable LTO for some Raspberry Pi versions.
     local use_lto="$USE_LTO"
     if [[ "$rpi_version" -lt 3 ]] && [[ "$USE_LTO" == "yes" ]]; then
@@ -551,6 +545,12 @@ function main() {
       fi
 
       apply_audio_fix
+
+      # Create a folder to pack all the binaries of the same Godot version and the same Raspberry Pi version.
+      if [[ "$PACK" == "yes" ]]; then
+        PACK_DIR="$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}"
+        mkdir -p "$PACK_DIR"
+      fi
 
       # As of Godot 4.0, the Linux platform changed from "x11" to "linuxbsd".
       local godot_platform
@@ -592,8 +592,6 @@ function main() {
         log "$(underline "GODOT '${binary_type^^}' ('$godot_version') FOR THE RASPBERRY PI '$rpi_version'")"
 
         cd "$GODOT_SOURCE_FILES_DIR"
-
-        # Force "builtin_freetype" because versions 3.1 and 3.1.1 need it.
 
         log ">> Cleaning SCons ..."
         scons \
@@ -659,7 +657,7 @@ function main() {
           log "> Done!"
         fi
 
-        # Prepare the binaries of the same Raspberry Pi version to be packed in one zip file.
+        # Prepare the binaries of the same Godot version and the same Raspberry Pi version to be packed.
         if [[ "$PACK" == "yes" ]]; then
           mv "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin" "$PACK_DIR"
         # Zip each binary separately.
@@ -683,28 +681,28 @@ function main() {
         log
       done
 
-      remove_audio_fix
-    done
-
-    # Pack all the binaries of the same Raspberry Pi version (if the folder is not empty).
-    if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $DIR)" ]]; then
-      log "##################################################"
-      log
-      log ">> Packing all the binaries for the Raspberry Pi '$rpi_version' ..."
-      zip -j -r "$PACK_DIR.zip" "$PACK_DIR"
-      if [[ "$?" -eq 0 ]]; then
-        rm -rf "$PACK_DIR"
-        log "> Done!"
-        log
-        log "You can find them at '$PACK_DIR.zip'."
-        log
+      # Pack all the binaries of the same Godot version and the same Raspberry Pi version (if the folder is not empty).
+      if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $DIR)" ]]; then
         log "##################################################"
-      else
-        log "ERROR: Something went wrong when packing the binaries for the Raspberry Pi '$rpi_version'." >&2
+        log
+        log ">> Packing all the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version' ..."
+        zip -j -r "$PACK_DIR.zip" "$PACK_DIR"
+        if [[ "$?" -eq 0 ]]; then
+          rm -rf "$PACK_DIR"
+          log "> Done!"
+          log
+          log "You can find them at '$PACK_DIR.zip'."
+          log
+          log "##################################################"
+        else
+          log "ERROR: Something went wrong when packing the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version'." >&2
+        fi
+
+        log
       fi
 
-      log
-    fi
+      remove_audio_fix
+    done
   done
 }
 
