@@ -431,7 +431,7 @@ function get_options() {
         set_config "use_lto" "$USE_LTO"
         ;;
 #H -P, --pack                           Packs all the binaries of the same Raspberry Pi version.
-      -p|--pack)
+      -P|--pack)
         PACK="yes"
         set_config "pack" "$PACK"
         ;;
