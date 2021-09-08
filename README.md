@@ -211,7 +211,7 @@ scons_jobs = ""
 # Option: "yes".
 use_lto = ""
 
-# Pack all the binaries of the same Raspberry Pi version.
+# Pack all the binaries of the same Godot version and the same Raspberry Pi version.
 # Option: "yes".
 pack = ""
 ```
@@ -323,6 +323,12 @@ raspberry_pi_versions = ""
 # Types of Godot binaries to transfer (separated by blank spaces).
 # Binary type/s: "editor export-template headless server".
 binaries = ""
+
+# Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version
+# instead of transfering each binary separately.
+# Only use it if you previously used the "--pack" option when compiling the binaries.
+# Option: "yes".
+pack = "yes"
 ```
 
 ## 🗒️ Changelog
