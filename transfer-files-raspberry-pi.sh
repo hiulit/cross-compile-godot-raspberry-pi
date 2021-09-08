@@ -33,7 +33,7 @@ readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
 # Variables #####################################
 
 GODOT_COMPILED_BINARIES_DIR="$SCRIPT_DIR/compiled-binaries"
-REMOTE_DIR="/home/pi/godot-binaries/" # Note the trailing slash!
+REMOTE_DIR="~/godot-binaries/" # Note the trailing slash!
 
 REMOTE_USERNAME=""
 REMOTE_IP=""
@@ -189,7 +189,7 @@ function get_options() {
         set_config "godot_compiled_binaries_dir" "$GODOT_COMPILED_BINARIES_DIR"
         ;;
 #H -rd, --remote-dir [path]             Sets the Raspberry Pi directory where the files will be transfered.
-#H                                        Default: "/home/pi/godot-binaries/" (note the trailing slash!).
+#H                                        Default: "~/godot-binaries/" (note the trailing slash!).
       -rd|--remote-dir)
         check_argument "$1" "$2" || exit 1
         local option="$1"

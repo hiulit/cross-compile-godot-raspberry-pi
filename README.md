@@ -253,7 +253,7 @@ Log files are stored in `logs/`.
 - `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
   - Default: `./compiled-binaries`.
 - `--remote-dir [path]`: Sets the Raspberry Pi directory where the files will be transfered.
-  - Default: `/home/pi/godot-binaries/` (note the trailing slash!).
+  - Default: `~/godot-binaries/` (note the trailing slash!).
 - `--remote-username [username]`: Sets the username of the Raspberry Pi.
 - `--remote-ip [IP]`: Sets the IP of the Raspberry Pi.
 - `--godot-versions [version/s]`: Sets the Godot version/s to compile.
@@ -303,7 +303,7 @@ You can edit this file directly, instead of passing all the options mentioned ab
 godot_compiled_binaries_dir = ""
 
 # Raspberry Pi directory where the files will be transfered.
-# Default: "/home/pi/godot-binaries/" (note the trailing slash!).
+# Default: "~/godot-binaries/" (note the trailing slash!).
 remote_dir = ""
 
 # Username of the Raspberry Pi
