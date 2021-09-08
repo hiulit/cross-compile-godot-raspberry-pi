@@ -41,6 +41,7 @@ GODOT_VERSIONS=""
 GODOT_COMMITS=""
 RASPBERRY_PI_VERSIONS=""
 BINARIES=""
+PACK=""
 
 HOST_FILES=()
 
@@ -277,6 +278,13 @@ function get_options() {
 
         set_config "binaries" "$BINARIES"
         ;;
+#H -P, --pack                           Sets a pack of all the binaries of the same Godot version
+#H                                      and the same Raspberry Pi version to transfer instead of
+#H                                      transfering each binary separately.
+      -P|--pack)
+        PACK="yes"
+        set_config "pack" "$PACK"
+        ;;
 #H -a, --auto                           Starts transfering taking the settings in the config file.
       -a|--auto)
         check_config
@@ -302,14 +310,15 @@ function main() {
 
   log
   log "----------"
-  log "Godot compiled binaries directory: $GODOT_COMPILED_BINARIES_DIR"
-  log "Raspberry Pi directory: $REMOTE_DIR"
-  log "Raspberry Pi username: $REMOTE_USERNAME"
-  log "Raspberry Pi IP: $REMOTE_IP"
-  log "Godot version/s to transfer: $GODOT_VERSIONS"
-  log "Godot commit/s to transfer: $GODOT_COMMITS"
-  log "Binaries to transfer: $BINARIES"
-  log "Raspberry Pi version/s to transfer: $RASPBERRY_PI_VERSIONS"
+  log "Godot compiled binaries directory: \"$GODOT_COMPILED_BINARIES_DIR\""
+  log "Raspberry Pi directory: \"$REMOTE_DIR\""
+  log "Raspberry Pi username: \"$REMOTE_USERNAME\""
+  log "Raspberry Pi IP: \"$REMOTE_IP\""
+  log "Godot version/s to transfer: \"$GODOT_VERSIONS\""
+  log "Godot commit/s to transfer: \"$GODOT_COMMITS\""
+  log "Binaries to transfer: \"$BINARIES\""
+  log "Raspberry Pi version/s to transfer: \"$RASPBERRY_PI_VERSIONS\""
+  log "Pack: \"$PACK\""
   log "----------"
   log
 
@@ -323,12 +332,18 @@ function main() {
     for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
       IFS=" " read -r -a GODOT_VERSIONS <<< "${GODOT_VERSIONS[@]}"
       for godot_version in "${GODOT_VERSIONS[@]}"; do
-        IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
-        for binary in "${BINARIES[@]}"; do
-          if [[ "$file" =~ "rpi$rpi_version" ]] && [[ "$file" =~ "$godot_version" ]] && [[ "$file" =~ "$binary" ]]; then
+        if [[ "$PACK" == "yes" ]]; then
+          if [[ "$file" =~ "rpi$rpi_version" ]] && [[ "$file" =~ "$godot_version" ]]; then
             HOST_FILES+=("$file")
           fi
-        done
+        else
+          IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
+          for binary in "${BINARIES[@]}"; do
+            if [[ "$file" =~ "rpi$rpi_version" ]] && [[ "$file" =~ "$godot_version" ]] && [[ "$file" =~ "$binary" ]]; then
+              HOST_FILES+=("$file")
+            fi
+          done
+        fi
       done
     done
   done
