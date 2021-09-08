@@ -536,11 +536,12 @@ function main() {
     for godot_version in "${GODOT_VERSIONS[@]}"; do
       cd "$GODOT_SOURCE_FILES_DIR"
 
+      # git checkout -- "$GODOT_AUDIO_FIX_FILE"
       git checkout --quiet "$godot_version"
       if ! [[ "$?" -eq 0 ]]; then
         log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
         log >&2
-        exit
+        exit 1
       fi
 
       apply_audio_fix
