@@ -4,6 +4,16 @@
 
 * Up to date.
 
+## [1.2.0] - 2021-09-08
+
+### Added
+
+- New option `--pack` for `transfer-files-raspberry-pi.sh`: Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version instead of transfering each binary separately. Only use it if you previously used the `--pack` option when compiling the binaries.
+
+### Removed
+
+- All the mentions to Raspberry Pi versions prior to version 3. The tool-chain can't compile below that version.
+
 ## [1.1.0] - 2021-03-08
 
 ### Added
