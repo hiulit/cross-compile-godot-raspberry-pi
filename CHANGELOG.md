@@ -8,7 +8,7 @@
 
 ### Added
 
-- New option `--pack` for `transfer-files-raspberry-pi.sh`: Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version instead of transfering each binary separately. Only use it if you previously used the `--pack` option when compiling the binaries.
+- New option `--pack` for `transfer-files-raspberry-pi.sh`: Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version instead of transferring each binary separately. Only use it if you previously used the `--pack` option when compiling the binaries.
 
 ### Removed
 

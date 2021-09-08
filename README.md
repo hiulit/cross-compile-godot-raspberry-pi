@@ -260,7 +260,7 @@ Log files are stored in `logs/`.
   - Version/s: `3 4`.
 - `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
   - Binary type/s: `editor export-template headless server`.
-- `--auto`: Starts transfering taking the settings in the [config file](#-config-file-1).
+- `--auto`: Starts transferring taking the settings in the [config file](#-config-file-1).
 
 ### 💁 Examples
 
@@ -325,7 +325,7 @@ raspberry_pi_versions = ""
 binaries = ""
 
 # Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version
-# instead of transfering each binary separately.
+# instead of transferring each binary separately.
 # Only use it if you previously used the "--pack" option when compiling the binaries.
 # Option: "yes".
 pack = "yes"

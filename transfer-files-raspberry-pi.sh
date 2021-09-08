@@ -280,12 +280,12 @@ function get_options() {
         ;;
 #H -P, --pack                           Sets a pack of all the binaries of the same Godot version
 #H                                      and the same Raspberry Pi version to transfer instead of
-#H                                      transfering each binary separately.
+#H                                      transferring each binary separately.
       -P|--pack)
         PACK="yes"
         set_config "pack" "$PACK"
         ;;
-#H -a, --auto                           Starts transfering taking the settings in the config file.
+#H -a, --auto                           Starts transferring taking the settings in the config file.
       -a|--auto)
         check_config
         ;;
@@ -354,10 +354,10 @@ function main() {
   fi
 
   for file in "${HOST_FILES[@]}"; do
-    log ">> Transfering '$file' ..."
+    log ">> Transferring '$file' ..."
     rsync -a -P --rsync-path="mkdir -p $REMOTE_DIR && rsync -a -P" "$GODOT_COMPILED_BINARIES_DIR"/"$file" "$REMOTE_USERNAME"@"$REMOTE_IP":"$REMOTE_DIR"
     if ! [[ "$?" -eq 0 ]]; then
-      log "ERROR: Something went wrong when transfering '$file'." >&2
+      log "ERROR: Something went wrong when transferring '$file'." >&2
       continue
     fi
     log "> Done!"
