@@ -103,7 +103,7 @@ Log files are stored in `logs/`.
 - `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
   - Commit/s: SHA-1 hash/es.
 - `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
-  - Version/s: `0 1 2 3 4`.
+  - Version/s: `3 4`.
 - `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
   - Binary type/s: `editor export-template headless server`.
 - `--scons-jobs [number|string]`: Sets the jobs (CPUs) to use in SCons.
@@ -198,7 +198,7 @@ godot_versions = ""
 godot_commits = ""
 
 # Raspberry Pi version/s to compile (separated by blank spaces).
-# Version/s: "0 1 2 3 4".
+# Version/s: "3 4".
 raspberry_pi_versions = ""
 
 # Types of Godot binaries to compile (separated by blank spaces).
@@ -261,7 +261,7 @@ Log files are stored in `logs/`.
 - `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
   - Commit/s: SHA-1 hash/es.
 - `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
-  - Version/s: `0 1 2 3 4`.
+  - Version/s: `3 4`.
 - `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
   - Binary type/s: `editor export-template headless server`.
 - `--auto`: Starts transfering taking the settings in the [config file](#-config-file-1).
@@ -321,7 +321,7 @@ godot_versions = ""
 godot_commits = ""
 
 # Raspberry Pi version/s to transfer (separated by blank spaces).
-# Version/s: "0 1 2 3 4".
+# Version/s: "3 4".
 raspberry_pi_versions = ""
 
 # Types of Godot binaries to transfer (separated by blank spaces).

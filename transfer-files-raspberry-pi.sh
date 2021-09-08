@@ -258,7 +258,7 @@ function get_options() {
         set_config "godot_commits" "$GODOT_COMMITS"
         ;;
 #H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to transfer.
-#H                                        Version/s: "0 1 2 3 4".
+#H                                        Version/s: "3 4".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift

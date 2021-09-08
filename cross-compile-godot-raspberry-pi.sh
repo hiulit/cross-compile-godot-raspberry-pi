@@ -386,7 +386,7 @@ function get_options() {
         set_config "godot_commits" "$GODOT_COMMITS"
         ;;
 #H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to compile.
-#H                                        Version/s: "0 1 2 3 4".
+#H                                        Version/s: "3 4".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -507,12 +507,12 @@ function main() {
   IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
   for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
     case "$rpi_version" in
-      0|1)
-        CCFLAGS="-mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mlittle-endian -munaligned-access"
-        ;;
-      2)
-        CCFLAGS="-mcpu=cortex-a7 -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -mlittle-endian -munaligned-access"
-        ;;
+      # 0|1)
+      #   CCFLAGS="-mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mlittle-endian -munaligned-access"
+      #   ;;
+      # 2)
+      #   CCFLAGS="-mcpu=cortex-a7 -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -mlittle-endian -munaligned-access"
+      #   ;;
       3)
         CCFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -mlittle-endian -munaligned-access"
         ;;
