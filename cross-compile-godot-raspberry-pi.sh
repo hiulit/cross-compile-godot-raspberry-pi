@@ -499,6 +499,14 @@ function main() {
   log "----------"
   log
 
+  cd "$GODOT_SOURCE_FILES_DIR"
+  if [[ -n "$(git status --porcelain)" ]]; then
+      git status
+      exit 1
+  else
+      git pull &> /dev/null
+  fi
+
   mkdir -p "$GODOT_COMPILED_BINARIES_DIR"
 
   # Concatenate versions and commits.
