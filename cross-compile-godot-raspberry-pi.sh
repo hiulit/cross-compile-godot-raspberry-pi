@@ -626,7 +626,8 @@ function main() {
         CCFLAGS="$CCFLAGS" \
         CC=arm-godot-linux-gnueabihf-gcc \
         CXX=arm-godot-linux-gnueabihf-g++ \
-        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
+        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no \
+        module_mono_enabled=yes mono_glue=yes
         if ! [[ "$?" -eq 0 ]]; then
           log "ERROR: Something went wrong when compiling Godot." >&2
           log >&2
