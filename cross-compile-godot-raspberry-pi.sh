@@ -59,6 +59,7 @@ BINARIES=""
 SCONS_JOBS="1"
 USE_LTO="no"
 PACK="no"
+MONO="no"
 
 GCC_VERBOSE="yes"
 VERSIONS_SUFFIX="-stable"
@@ -435,6 +436,10 @@ function get_options() {
         PACK="yes"
         set_config "pack" "$PACK"
         ;;
+# Mono Support
+      -M|--mono)
+      MONO="yes"
+      ;;
 #H -a, --auto                           Starts compiling taking the settings in the config file.
       -a|--auto)
         check_config
@@ -612,8 +617,9 @@ function main() {
           continue
         fi
         log "> Done!"
-
+        
         log ">> Compiling Godot ..."
+        if ["$MONO" == "yes"]
         PATH="$GODOT_TOOLCHAIN_DIR"/bin/:$PATH \
         scons \
         -j"$SCONS_JOBS" \
@@ -627,9 +633,24 @@ function main() {
         CC=arm-godot-linux-gnueabihf-gcc \
         CXX=arm-godot-linux-gnueabihf-g++ \
         module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no \
-        module_gdnative_enabled=yes \
-        module_mono_enabled=yes mono_glue=yes
+        module_gdnative_enabled=yes 
+        else
+        PATH="$GODOT_TOOLCHAIN_DIR"/bin/:$PATH \
+        scons \
+        -j"$SCONS_JOBS" \
+        platform="$GODOT_PLATFORM" \
+        tools="$GODOT_TOOLS" \
+        target="$GODOT_TARGET" \
+        builtin_freetype=yes \
+        use_lto="$use_lto" \
+        use_static_cpp=yes \
+        CCFLAGS="$CCFLAGS" \
+        CC=arm-godot-linux-gnueabihf-gcc \
+        CXX=arm-godot-linux-gnueabihf-g++ \
+        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no 
+
         if ! [[ "$?" -eq 0 ]]; then
+
 
           log "ERROR: Something went wrong when compiling Godot." >&2
           log >&2
