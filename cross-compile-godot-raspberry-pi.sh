@@ -32,6 +32,8 @@
 #
 # - Raspberry Pi versions "0", "1" and "2" can't be compiled using Link Time Optimization (LTO).
 
+# Mono dependecies directory needed for future mono support
+# export PKG_CONFIG_PATH=
 
 # Globals ########################################
 
@@ -626,8 +628,12 @@ function main() {
         CCFLAGS="$CCFLAGS" \
         CC=arm-godot-linux-gnueabihf-gcc \
         CXX=arm-godot-linux-gnueabihf-g++ \
-        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
+        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no \
+        module_gdnative_enabled=yes
+        # uncommit this when rewriting to support mono and maybe work on a mac
+        # module_mono_enabled=yes mono_glue=no
         if ! [[ "$?" -eq 0 ]]; then
+
           log "ERROR: Something went wrong when compiling Godot." >&2
           log >&2
           remove_audio_fix
