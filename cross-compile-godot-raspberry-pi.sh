@@ -690,7 +690,7 @@ function main() {
       done
 
       # Pack all the binaries of the same Godot version and the same Raspberry Pi version (if the folder is not empty).
-      if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $DIR)" ]]; then
+      if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $PACK_DIR)" ]]; then
         log "##################################################"
         log
         log ">> Packing all the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version' ..."
