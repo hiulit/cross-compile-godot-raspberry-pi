@@ -27,7 +27,7 @@
 #
 # The toolchain this script uses has a few limitations at the moment:
 #
-# - Only supports cross-compilation for "32 bit" binaries.
+# - Only supports cross-compilation for Raspberry Pi versions >= `3`.
 # - Can't compile Godot "2.x" because it requires "gcc < 6" and the toolchain only has "gcc 10.2".
 #
 # Other limitations:
