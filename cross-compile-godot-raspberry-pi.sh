@@ -618,6 +618,11 @@ function main() {
         GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_64_NAME"
         GODOT_TOOLCHAIN_ARM_BITS="64"
         ;;
+      *)
+        log "Unsupported bits: $toolchain_bits" >&2
+        log >&2
+        continue
+        ;;
     esac
 
     IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
