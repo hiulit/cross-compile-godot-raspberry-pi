@@ -10,8 +10,10 @@
 #
 # Requirements:
 # - Godot source files (https://github.com/godotengine/godot) (can be downloaded with this script)
-# - Godot dependecies to compile for Linux (https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html)
-# - Godot toolchain to cross-compile for ARM (https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script)
+# - Godot dependecies to compile for Linux (https://docs.godotengine.org/en/3.6/development/compiling/compiling_for_x11.html)
+# - Godot toolchain to cross-compile for ARM (can be downloaded with this script).
+#   - 32 bits (https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2)
+#   - 64 bits (https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4/aarch64-godot-linux-gnu_sdk-buildroot.tar.bz2)
 #
 # Dependencies
 # - curl
@@ -44,13 +46,22 @@ readonly SCRIPT_DESCRIPTION="A script to easily cross-compile Godot binaries for
 readonly SCRIPT_CFG="$SCRIPT_DIR/cross-compile-godot-raspberry-pi.cfg"
 readonly LOG_DIR="$SCRIPT_DIR/logs/cross-compile-godot-raspberry-pi"
 readonly LOG_FILE="$LOG_DIR/$(date +%F-%T).log"
+
 readonly GODOT_AUDIO_FIX_FILE="drivers/alsa/audio_driver_alsa.cpp"
+readonly GODOT_VHACD_ICHULL_FIX_FILE="thirdparty/vhacd/inc/vhacdICHull.h"
 
 
 # Variables #####################################
 
 GODOT_SOURCE_FILES_DIR="$SCRIPT_DIR/godot"
-GODOT_TOOLCHAIN_DIR="$SCRIPT_DIR/arm-godot-linux-gnueabihf_sdk-buildroot"
+GODOT_TOOLCHAIN_ARM_BASE_URL="https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4"
+GODOT_TOOLCHAIN_ARM_BITS="32"
+GODOT_TOOLCHAIN_ARM_32_NAME="arm-godot-linux-gnueabihf"
+GODOT_TOOLCHAIN_ARM_64_NAME="aarch64-godot-linux-gnu"
+GODOT_TOOLCHAIN_ARM_32_DIR="$SCRIPT_DIR/${GODOT_TOOLCHAIN_ARM_32_NAME}_sdk-buildroot"
+GODOT_TOOLCHAIN_ARM_64_DIR="$SCRIPT_DIR/${GODOT_TOOLCHAIN_ARM_64_NAME}_sdk-buildroot"
+GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_32_DIR"
+GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_32_NAME"
 GODOT_COMPILED_BINARIES_DIR="$SCRIPT_DIR/compiled-binaries"
 GODOT_VERSIONS=""
 GODOT_COMMITS=""
@@ -99,11 +110,8 @@ function underline() {
 function check_argument() {
   # This method doesn't accept arguments starting with '-'.
   if [[ -z "$2" || "$2" =~ ^- ]]; then
-    echo >&2
     echo "ERROR: '$1' is missing an argument." >&2
-    echo >&2
     echo "Try '$0 --help' for more info." >&2
-    echo >&2
     return 1
   fi
 }
@@ -165,6 +173,20 @@ function check_config() {
     config_param="${config_param#\"}"
 
     if [[ -n "$config_param" ]]; then
+      if [[ "$config_name" == "GODOT_TOOLCHAIN_BITS" ]]; then
+        if [[ "$config_param" == "32" ]]; then
+          GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_32_DIR"
+          GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_32_NAME"
+        fi
+
+        if [[ "$config_param" =~ "64" ]]; then
+          GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_64_DIR"
+          GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_64_NAME"
+        fi
+
+        GODOT_TOOLCHAIN_ARM_BITS="$config_param"
+      fi
+
       if [[ "$config_name" == "SCONS_JOBS" ]] && [[ "$config_param" == "all" ]]; then
         config_param="$(nproc)"
       fi
@@ -207,6 +229,7 @@ function log() {
 
 function ctrl_c() {
   remove_audio_fix
+  remove_vhacdICHull_fix
 
   log >&2
   log "Cancelled by user." >&2
@@ -230,6 +253,33 @@ function remove_audio_fix() {
 }
 
 
+function apply_vhacdICHull_fix() {
+  if [[ ! -f "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE" ]]; then
+    return 1
+  fi
+
+  # We need to add the 'include' manually for versions lower than 3.5.1.
+  # It seems it has to do with the newer versions of gcc that the new toolchains use.
+  if [[ "$godot_version" != "master" ]] && [[ "$(version "$godot_version")" -lt "$(version 3.5.1-stable)" ]]; then
+    if ! grep -q "#include <cstdint>" "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE"; then
+      sed -i '/^#include/{ :a; n; /^#include/ba; i\#include <cstdint>
+}' "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE"
+    fi
+  fi
+}
+
+function remove_vhacdICHull_fix() {
+  if [[ ! -f "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE" ]]; then
+    return 1
+  fi
+
+  if [[ "$godot_version" != "master" ]] && [[ "$(version "$godot_version")" -lt "$(version 3.5.1-stable)" ]]; then
+    if grep -q "#include <cstdint>" "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE"; then
+      sed -i '/#include <cstdint>/d' "$GODOT_SOURCE_FILES_DIR/$GODOT_VHACD_ICHULL_FIX_FILE"
+    fi
+  fi
+}
+
 function get_options() {
   if [[ -z "$1" ]]; then
     usage
@@ -238,7 +288,7 @@ function get_options() {
 
   while [[ -n "$1" ]]; do
     case "$1" in
-#H -h, --help                           Prints the help message.
+#H -h, --help                          Prints the help message.
       -h|--help)
         echo
         underline "$SCRIPT_TITLE"
@@ -252,23 +302,23 @@ function get_options() {
         echo
         exit 0
         ;;
-#H -v, --version                        Prints the script version.
+#H -v, --version                       Prints the script version.
       -v|--version)
         echo "$SCRIPT_VERSION"
         exit 0
         ;;
-#H -gt, --get-tags                      Prints the Godot tags from GitHub available to be compiled.
+#H -gt, --get-tags                     Prints the Godot tags from GitHub available to be compiled.
       -gt|--get-tags)
         curl -sL https://api.github.com/repos/godotengine/godot/tags | jq -r ".[].name" | grep -E '^[3-9].[1-9]'
         exit 0
         ;;
-#H -gj, --get-jobs                      Prints the number of available jobs/CPUs.
+#H -gj, --get-jobs                     Prints the number of available jobs/CPUs.
       -gj|--get-jobs)
         nproc
         exit 0
         ;;
-#H -d, --download [file] [path]         Downloads the Godot source files or the Godot toolchain.
-#H                                        File: "godot-source-files" or "godot-toolchain".
+#H -d, --download [file] [path]        Downloads the Godot source files or the Godot toolchain.
+#H                                        File: "godot-source-files" or "godot-toolchain-arm-[32|64]".
 #H                                        Path (optional): Path to the directory where the files will be stored.
 #H                                        Default path: Same folder as this script.
       -d|--download)
@@ -276,8 +326,8 @@ function get_options() {
         local option="$1"
         shift
 
-        if [[ "$1" != "godot-source-files" ]] && [[ "$1" != "godot-toolchain" ]]; then
-          echo "ERROR: Argument for '$option' ('"$1"') must be 'godot-source-files' or 'godot-toolchain'." >&2
+        if [[ "$1" != "godot-source-files" ]] && [[ "$1" != "godot-toolchain-arm-32" ]] && [[ "$1" != "godot-toolchain-arm-64" ]]; then
+          echo "ERROR: Argument for '$option' ('"$1"') must be 'godot-source-files' or 'godot-toolchain-arm-[32|64]'." >&2
           exit 1
         fi
 
@@ -290,21 +340,36 @@ function get_options() {
           git clone https://github.com/godotengine/godot.git "$GODOT_SOURCE_FILES_DIR"
         fi
 
-        if [[ "$1" == "godot-toolchain" ]]; then
-          if [[ -n "$2" ]]; then
-            GODOT_TOOLCHAIN_DIR="$2"
-            set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
+        if [[ "$1" =~ "godot-toolchain-arm" ]]; then
+          if [[ "$1" =~ "32" ]]; then
+            if [[ -n "$2" ]]; then
+              GODOT_TOOLCHAIN_ARM_32_DIR="$2"
+              set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_ARM_32_DIR"
+            fi
+
+            GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_32_DIR"
+            GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_32_NAME"
           fi
 
-          wget -P "$GODOT_TOOLCHAIN_DIR" -q --show-progress https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
-          tar -xvf "$GODOT_TOOLCHAIN_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2 --strip-components 1 -C "$GODOT_TOOLCHAIN_DIR"
-          rm "$GODOT_TOOLCHAIN_DIR"/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2
-          "$GODOT_TOOLCHAIN_DIR"/relocate-sdk.sh
+          if [[ "$1" =~ "64" ]]; then
+            if [[ -n "$2" ]]; then
+              GODOT_TOOLCHAIN_ARM_64_DIR="$2"
+              set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_ARM_64_DIR"
+            fi
+
+            GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_64_DIR"
+            GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_64_NAME"
+          fi
+
+          wget -P "$GODOT_TOOLCHAIN_ARM_DIR" -q --show-progress "$GODOT_TOOLCHAIN_ARM_BASE_URL"/"${GODOT_TOOLCHAIN_ARM_NAME}"_sdk-buildroot.tar.bz2
+          tar -xvf "$GODOT_TOOLCHAIN_ARM_DIR"/"${GODOT_TOOLCHAIN_ARM_NAME}"_sdk-buildroot.tar.bz2 --strip-components 1 -C "$GODOT_TOOLCHAIN_ARM_DIR"
+          rm "$GODOT_TOOLCHAIN_ARM_DIR"/"${GODOT_TOOLCHAIN_ARM_NAME}"_sdk-buildroot.tar.bz2
+          "$GODOT_TOOLCHAIN_ARM_DIR"/relocate-sdk.sh
         fi
 
         exit 0
         ;;
-#H -sd, --source-dir [path]             Sets the Godot source files directory.
+#H -sd, --source-dir [path]            Sets the Godot source files directory.
 #H                                        Default: "./godot".
       -sd|--source-dir)
         check_argument "$1" "$2" || exit 1
@@ -319,7 +384,26 @@ function get_options() {
         GODOT_SOURCE_FILES_DIR="$1"
         set_config "godot_source_files_dir" "$GODOT_SOURCE_FILES_DIR"
         ;;
-#H -td, --toolchain-dir [path]          Sets the Godot toolchain directory.
+#H -tb, --toolchain-bits [bits]        Sets the Godot toolchain bits.
+#H                                        Bits: "32 64".
+#H                                        Default: "32".
+      -tb|--toolchain-bits)
+        check_argument "$1" "$2" || exit 1
+        local option="$1"
+        shift
+
+        for bits in $1; do
+          if [[ "$bits" != "32" ]] && [[ "$bits" != "64" ]]; then
+            echo "ERROR: The number for '$option' ('$bits') must be 32 or 64." >&2
+            exit 1
+          fi
+        done
+
+        GODOT_TOOLCHAIN_ARM_BITS="$1"
+
+        set_config "godot_toolchain_bits" "$GODOT_TOOLCHAIN_ARM_BITS"
+        ;;
+#H -td, --toolchain-dir [path]         Sets the Godot toolchain directory.
 #H                                        Default: "./arm-godot-linux-gnueabihf_sdk-buildroot".
       -td|--toolchain-dir)
         check_argument "$1" "$2" || exit 1
@@ -331,10 +415,10 @@ function get_options() {
           exit 1
         fi
 
-        GODOT_TOOLCHAIN_DIR="$1"
-        set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_DIR"
+        GODOT_TOOLCHAIN_ARM_DIR="$1"
+        set_config "godot_toolchain_dir" "$GODOT_TOOLCHAIN_ARM_DIR"
         ;;
-#H -bd, --binaries-dir [path]           Sets the Godot compiled binaries directory.
+#H -bd, --binaries-dir [path]          Sets the Godot compiled binaries directory.
 #H                                        Default: "./compiled-binaries".
       -bd|--binaries-dir)
         check_argument "$1" "$2" || exit 1
@@ -349,9 +433,9 @@ function get_options() {
         GODOT_COMPILED_BINARIES_DIR="$1"
         set_config "godot_compiled_binaries_dir" "$GODOT_COMPILED_BINARIES_DIR"
         ;;
-#H -gv, --godot-versions [version/s]    Sets the Godot version/s to compile.
-#H                                        Version/s: Use '--get-tags' to see the available versions.
-#H                                        Version/s must end with the suffix "-stable", except for "master".
+#H -gv, --godot-versions [version(s)]   Sets the Godot version(s) to compile.
+#H                                        Version(s): Use '--get-tags' to see the available versions.
+#H                                        Version(s) must end with the suffix "-stable", except for "master".
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -375,8 +459,8 @@ function get_options() {
 
         set_config "godot_versions" "$GODOT_VERSIONS"
         ;;
-#H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to compile.
-#H                                        Commit/s: SHA-1 hash/es.
+#H -gc, --godot-commits [commit(s)]     Sets the Godot commit(s) to compile.
+#H                                        Commit(s): SHA-1 hashes.
       -gc|--godot-commits)
         check_argument "$1" "$2" || exit 1
         shift
@@ -385,8 +469,8 @@ function get_options() {
 
         set_config "godot_commits" "$GODOT_COMMITS"
         ;;
-#H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to compile.
-#H                                        Version/s: "3 4".
+#H -rv, --rpi-versions [version(s)]     Sets the Raspberry Pi version(s) to compile.
+#H                                        Version(s): "3 4 5 portable".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -395,8 +479,8 @@ function get_options() {
 
         set_config "raspberry_pi_versions" "$RASPBERRY_PI_VERSIONS"
         ;;
-#H -b, --binaries [binary type/s]       Sets the different types of Godot binaries to compile.
-#H                                        Binary type/s: "editor export-template headless server".
+#H -b, --binaries [binary type(s)]      Sets the different types of Godot binaries to compile.
+#H                                        Binary type(s): "editor export-template headless server".
       -b|--binaries)
         check_argument "$1" "$2" || exit 1
         shift
@@ -405,7 +489,7 @@ function get_options() {
 
         set_config "binaries" "$BINARIES"
         ;;
-#H -j, --scons-jobs [number|string]     Sets the jobs (CPUs) to use in SCons.
+#H -j, --scons-jobs [number|string]    Sets the jobs (CPUs) to use in SCons.
 #H                                        Number: "1-∞".
 #H                                        String: "all" (use all the available CPUs).
 #H                                        Default: "1".
@@ -425,17 +509,17 @@ function get_options() {
 
         set_config "scons_jobs" "$SCONS_JOBS"
         ;;
-#H -L, --use-lto                        Enables using Link Time Optimization (LTO) when compiling.
+#H -L, --use-lto                       Enables Link Time Optimization (LTO).
       -L|--use-lto)
         USE_LTO="yes"
         set_config "use_lto" "$USE_LTO"
         ;;
-#H -P, --pack                           Packs all the binaries of the same Godot version and the same Raspberry Pi version.
+#H -P, --pack                          Packs all the binaries of the same Godot version and the same Raspberry Pi version.
       -P|--pack)
         PACK="yes"
         set_config "pack" "$PACK"
         ;;
-#H -a, --auto                           Starts compiling taking the settings in the config file.
+#H -a, --auto                          Starts compilation using the settings from the config file.
       -a|--auto)
         check_config
         ;;
@@ -460,26 +544,26 @@ function main() {
   # Check for mandatory arguments.
   local errors=0
 
+  log >&2
+
   if [[ -z "$GODOT_VERSIONS" ]] && [[ -z "$GODOT_COMMITS" ]]; then
-    log >&2
     log "ERROR: At least one version of Godot or one commit must be set to compile." >&2
     ((errors+=1))
   fi
 
   if [[ -z "$BINARIES" ]]; then
-    log >&2
     log "ERROR: At least one type of Godot binary must be set to compile." >&2
     ((errors+=1))
   fi
 
   if [[ -z "$RASPBERRY_PI_VERSIONS" ]]; then
-    log >&2
     log "ERROR: At least one version of Raspberry Pi must be set to compile." >&2
     ((errors+=1))
   fi
 
+  log >&2
+
   if [[ "$errors" -gt 0 ]]; then
-    log >&2
     log "Use '$0 --help' to see all the options." >&2
     exit 1
   fi
@@ -487,12 +571,13 @@ function main() {
   log
   log "----------"
   log "Godot source files directory: \"$GODOT_SOURCE_FILES_DIR\""
-  log "Godot toolchain directory: \"$GODOT_TOOLCHAIN_DIR\""
+  log "Godot toolchain bits: \"$GODOT_TOOLCHAIN_ARM_BITS\""
+  log "Godot toolchain directory: \"$GODOT_TOOLCHAIN_ARM_DIR\""
   log "Godot compiled binaries directory: \"$GODOT_COMPILED_BINARIES_DIR\""
-  log "Godot version/s to compile: \"$GODOT_VERSIONS\""
-  log "Godot commit/s to compile: \"$GODOT_COMMITS\""
+  log "Godot version(s) to compile: \"$GODOT_VERSIONS\""
+  log "Godot commit(s) to compile: \"$GODOT_COMMITS\""
   log "Binaries to compile: \"$BINARIES\""
-  log "Raspberry Pi version/s to compile: \"$RASPBERRY_PI_VERSIONS\""
+  log "Raspberry Pi version(s) to compile: \"$RASPBERRY_PI_VERSIONS\""
   log "SCons jobs: \"$SCONS_JOBS\""
   log "Use LTO: \"$USE_LTO\""
   log "Pack: \"$PACK\""
@@ -500,11 +585,19 @@ function main() {
   log
 
   cd "$GODOT_SOURCE_FILES_DIR"
+
+  echo "Fetching Godot source files..."
+  git fetch --quiet
+
   if [[ -n "$(git status --porcelain)" ]]; then
       git status
       exit 1
   else
-      git pull &> /dev/null
+      git pull --dry-run
+      if ! [[ "$?" -eq 0 ]]; then
+        echo "Updating Godot source files..."
+        git pull
+      fi
   fi
 
   mkdir -p "$GODOT_COMPILED_BINARIES_DIR"
@@ -512,204 +605,262 @@ function main() {
   # Concatenate versions and commits.
   GODOT_VERSIONS+=("$GODOT_COMMITS")
 
-  IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
-  for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
-    case "$rpi_version" in
-      # 0|1)
-      #   CCFLAGS="-mcpu=arm1176jzf-s -mtune=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -mlittle-endian -munaligned-access"
-      #   ;;
-      # 2)
-      #   CCFLAGS="-mcpu=cortex-a7 -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -mlittle-endian -munaligned-access"
-      #   ;;
-      3)
-        CCFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -mlittle-endian -munaligned-access"
+  IFS=" " read -r -a GODOT_TOOLCHAIN_ARM_BITS <<< "${GODOT_TOOLCHAIN_ARM_BITS[@]}"
+  for toolchain_bits in "${GODOT_TOOLCHAIN_ARM_BITS[@]}"; do
+    case "$toolchain_bits" in
+      32)
+        GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_32_DIR"
+        GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_32_NAME"
+        GODOT_TOOLCHAIN_ARM_BITS="32"
         ;;
-      4)
-        CCFLAGS="-mcpu=cortex-a72 -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard -mlittle-endian -munaligned-access"
+      64)
+        GODOT_TOOLCHAIN_ARM_DIR="$GODOT_TOOLCHAIN_ARM_64_DIR"
+        GODOT_TOOLCHAIN_ARM_NAME="$GODOT_TOOLCHAIN_ARM_64_NAME"
+        GODOT_TOOLCHAIN_ARM_BITS="64"
         ;;
     esac
 
-    # Disable LTO for some Raspberry Pi versions.
-    local use_lto="$USE_LTO"
-    if [[ "$rpi_version" -lt 3 ]] && [[ "$USE_LTO" == "yes" ]]; then
-      use_lto="no"
-    fi
+    IFS=" " read -r -a RASPBERRY_PI_VERSIONS <<< "${RASPBERRY_PI_VERSIONS[@]}"
+    for rpi_version in "${RASPBERRY_PI_VERSIONS[@]}"; do
+      case "$rpi_version" in
+        3)
+          if [[ "$GODOT_TOOLCHAIN_ARM_BITS" == "32" ]]; then
+            CCFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
+          else
+            CCFLAGS="-mcpu=cortex-a53 -mtune=cortex-a53"
+          fi
+          ;;
+        4)
+          if [[ "$GODOT_TOOLCHAIN_ARM_BITS" == "32" ]]; then
+            CCFLAGS="-mcpu=cortex-a72 -mtune=cortex-a72 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
+          else
+            CCFLAGS="-mcpu=cortex-a72 -mtune=cortex-a72"
+          fi
+          ;;
+        5)
+          if [[ "$GODOT_TOOLCHAIN_ARM_BITS" == "32" ]]; then
+            CCFLAGS="-mcpu=cortex-a76 -mtune=cortex-a76 -mfpu=neon-fp-armv8 -mfloat-abi=hard"
+          else
+            CCFLAGS="-mcpu=cortex-a76 -mtune=cortex-a76"
+          fi
+          ;;
+        portable)
+          if [[ "$GODOT_TOOLCHAIN_ARM_BITS" == "32" ]]; then
+            CCFLAGS="-march=armv8-a -mfpu=neon-fp-armv8 -mfloat-abi=hard"
+          else
+            CCFLAGS="-march=armv8-a"
+          fi
+          ;;
+        *)
+          log "Unsupported Raspberry Pi version: $rpi_version" >&2
+          log >&2
+          continue
+          ;;
+      esac
 
-    # Disable all gcc output (+ warnings and notes).
-    if [[ "$GCC_VERBOSE" == "no" ]]; then
-      CCFLAGS+=" -w -fcompare-debug-second"
-    fi
+      local rpi_suffix="$rpi_version"
 
-    IFS=" " read -r -a GODOT_VERSIONS <<< "${GODOT_VERSIONS[@]}"
-    for godot_version in "${GODOT_VERSIONS[@]}"; do
-      cd "$GODOT_SOURCE_FILES_DIR"
-
-      # git checkout -- "$GODOT_AUDIO_FIX_FILE"
-      git checkout --quiet "$godot_version"
-      if ! [[ "$?" -eq 0 ]]; then
-        log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
-        log >&2
-        exit 1
+      if [[ "$rpi_version" == "portable" ]]; then
+        rpi_suffix="_portable"
       fi
 
-      apply_audio_fix
-
-      # Create a folder to pack all the binaries of the same Godot version and the same Raspberry Pi version.
-      if [[ "$PACK" == "yes" ]]; then
-        PACK_DIR="$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_version}"
-        mkdir -p "$PACK_DIR"
+      # Disable all gcc output (+ warnings and notes).
+      if [[ "$GCC_VERBOSE" == "no" ]]; then
+        CCFLAGS+=" -w -fcompare-debug-second"
       fi
 
-      # As of Godot 4.0, the Linux platform changed from "x11" to "linuxbsd".
-      local godot_platform
-      if [[ "$(version "$godot_version")" -ge "$(version 4.0-stable)" ]] || [[ "$godot_version" == "master" ]]; then
-        godot_platform="linuxbsd"
-      else
-        godot_platform="x11"
-      fi
-
-      IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
-      for binary_type in "${BINARIES[@]}"; do
-        case "$binary_type" in
-          "editor")
-            GODOT_TOOLS="yes"
-            GODOT_TARGET="release_debug"
-            GODOT_PLATFORM="$godot_platform"
-            GODOT_BINARY_NAME="godot.${godot_platform}.opt.tools.64"
-            ;;
-          "export-template")
-            GODOT_TOOLS="no"
-            GODOT_TARGET="release"
-            GODOT_PLATFORM="$godot_platform"
-            GODOT_BINARY_NAME="godot.${godot_platform}.opt.64"
-            ;;
-          "headless")
-            GODOT_TOOLS="yes"
-            GODOT_TARGET="release_debug"
-            GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.tools.64"
-            ;;
-          "server")
-            GODOT_TOOLS="no"
-            GODOT_TARGET="release"
-            GODOT_PLATFORM="server"
-            GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.64"
-            ;;
-        esac
-
-        log "$(underline "GODOT '${binary_type^^}' ('$godot_version') FOR THE RASPBERRY PI '$rpi_version'")"
-
+      IFS=" " read -r -a GODOT_VERSIONS <<< "${GODOT_VERSIONS[@]}"
+      for godot_version in "${GODOT_VERSIONS[@]}"; do
         cd "$GODOT_SOURCE_FILES_DIR"
 
-        log ">> Cleaning SCons ..."
-        scons \
-        builtin_freetype=yes \
-        --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
+        git checkout --quiet "$godot_version"
         if ! [[ "$?" -eq 0 ]]; then
-          log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
+          log "ERROR: Something went wrong when checking out to '$godot_version'." >&2
           log >&2
-          remove_audio_fix
-          continue
-        fi
-        log "> Done!"
-
-        log ">> Compiling Godot ..."
-        PATH="$GODOT_TOOLCHAIN_DIR"/bin/:$PATH \
-        scons \
-        -j"$SCONS_JOBS" \
-        platform="$GODOT_PLATFORM" \
-        tools="$GODOT_TOOLS" \
-        target="$GODOT_TARGET" \
-        builtin_freetype=yes \
-        use_lto="$use_lto" \
-        use_static_cpp=yes \
-        CCFLAGS="$CCFLAGS" \
-        CC=arm-godot-linux-gnueabihf-gcc \
-        CXX=arm-godot-linux-gnueabihf-g++ \
-        module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
-        if ! [[ "$?" -eq 0 ]]; then
-          log "ERROR: Something went wrong when compiling Godot." >&2
-          log >&2
-          remove_audio_fix
-          continue
-        fi
-        log "> Done!"
-
-        cd "$GODOT_SOURCE_FILES_DIR/bin"
-
-        local binary_name
-        if [[ "$use_lto" == "yes" ]]; then
-          binary_name="godot_${godot_version}_rpi${rpi_version}_${binary_type}_lto"
-        else
-          binary_name="godot_${godot_version}_rpi${rpi_version}_${binary_type}"
+          exit 1
         fi
 
-        log ">> Moving '$GODOT_BINARY_NAME' to '$GODOT_COMPILED_BINARIES_DIR' ..."
-        log ">> Renaming '$GODOT_BINARY_NAME' to '$binary_name.bin' ..."
-        mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-        if ! [[ "$?" -eq 0 ]]; then
-          log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
-          log >&2
-          remove_audio_fix
-          continue
-        fi
-        log "> Done!"
+        apply_audio_fix
+        apply_vhacdICHull_fix
 
-        log ">> Stripping debug symbols for '$binary_name.bin' ..."
-        "$GODOT_TOOLCHAIN_DIR"/bin/arm-godot-linux-gnueabihf-strip "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-        if ! [[ "$?" -eq 0 ]]; then
-          log "ERROR: Something went wrong when stripping the debug symbols of '$binary_name.bin'." >&2
-          log >&2
-          remove_audio_fix
-        else
-          log "> Done!"
-        fi
-
-        # Prepare the binaries of the same Godot version and the same Raspberry Pi version to be packed.
+        # Create a folder to pack all the binaries of the same Godot version and the same Raspberry Pi version.
         if [[ "$PACK" == "yes" ]]; then
-          mv "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin" "$PACK_DIR"
-        # Zip each binary separately.
+          PACK_DIR="$GODOT_COMPILED_BINARIES_DIR/godot_${godot_version}_rpi${rpi_suffix}_${GODOT_TOOLCHAIN_ARM_BITS}"
+          mkdir -p "$PACK_DIR"
+        fi
+
+        # As of Godot 4.0, the Linux platform changed from "x11" to "linuxbsd".
+        local godot_platform
+        if [[ "$(version "$godot_version")" -ge "$(version 4.0-stable)" ]] || [[ "$godot_version" == "master" ]]; then
+          godot_platform="linuxbsd"
         else
-          log ">> Compressing '$binary_name.bin' ..."
-          zip -j "$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-          if [[ "$?" -eq 0 ]]; then
-            rm "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
-            log "> Done!"
-            log
-            log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip'."
-          else
-            log "ERROR: Something went wrong when compressing '$binary_name.bin'." >&2
+          godot_platform="x11"
+        fi
+
+        IFS=" " read -r -a BINARIES <<< "${BINARIES[@]}"
+        for binary_type in "${BINARIES[@]}"; do
+          case "$binary_type" in
+            "editor")
+              GODOT_TOOLS="yes"
+              GODOT_TARGET="release_debug"
+              if [[ "$(version "$godot_version")" -ge "$(version 4.0-stable)" ]] || [[ "$godot_version" == "master" ]]; then
+                GODOT_TARGET="editor"
+              fi
+              GODOT_PLATFORM="$godot_platform"
+              GODOT_BINARY_NAME="godot.${godot_platform}.opt.tools.64"
+              ;;
+            "export-template")
+              GODOT_TOOLS="no"
+              GODOT_TARGET="release"
+              GODOT_PLATFORM="$godot_platform"
+              GODOT_BINARY_NAME="godot.${godot_platform}.opt.64"
+              ;;
+            "headless")
+              GODOT_TOOLS="yes"
+              GODOT_TARGET="release_debug"
+              GODOT_PLATFORM="server"
+              GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.tools.64"
+              ;;
+            "server")
+              GODOT_TOOLS="no"
+              GODOT_TARGET="release"
+              GODOT_PLATFORM="server"
+              GODOT_BINARY_NAME="godot_server.${godot_platform}.opt.64"
+              ;;
+          esac
+
+          log "$(underline "GODOT '${binary_type^^}' ('$godot_version') FOR THE RASPBERRY PI '$rpi_version' ('$GODOT_TOOLCHAIN_ARM_BITS bits')")"
+
+          cd "$GODOT_SOURCE_FILES_DIR"
+
+          log ">> Cleaning SCons ..."
+          scons \
+          -j"$SCONS_JOBS" \
+          builtin_freetype=yes \
+          --clean platform="$GODOT_PLATFORM" tools="$GODOT_TOOLS" target="$GODOT_TARGET"
+          if ! [[ "$?" -eq 0 ]]; then
+            log "ERROR: Something went wrong when cleaning generated files for the '$GODOT_PLATFORM' platform." >&2
             log >&2
             remove_audio_fix
+            remove_vhacdICHull_fix
+            continue
           fi
-        fi
-
-        log
-        log "The Godot '$binary_type' ('$godot_version') for the Raspberry Pi '$rpi_version' was compiled successfully!"
-        log
-      done
-
-      # Pack all the binaries of the same Godot version and the same Raspberry Pi version (if the folder is not empty).
-      if [[ "$PACK" == "yes" ]] && [[ ! "$(ls -A $PACK_DIR)" ]]; then
-        log "##################################################"
-        log
-        log ">> Packing all the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version' ..."
-        zip -j -r "$PACK_DIR.zip" "$PACK_DIR"
-        if [[ "$?" -eq 0 ]]; then
-          rm -rf "$PACK_DIR"
           log "> Done!"
+
+          local lto_option
+          if [[ "$godot_version" != "master" ]] && [[ "$(version "$godot_version")" -lt "$(version 3.6-stable)" ]]; then
+            lto_option="use_lto=$USE_LTO"
+          else
+            if [[ "$USE_LTO" == "yes" ]]; then
+              lto_option="lto=full"
+            else
+              lto_option="lto=none"
+            fi
+          fi
+
+          log ">> Compiling Godot ..."
+          PATH="$GODOT_TOOLCHAIN_ARM_DIR"/bin/:$PATH \
+          scons \
+          -j"$SCONS_JOBS" \
+          platform="$GODOT_PLATFORM" \
+          tools="$GODOT_TOOLS" \
+          target="$GODOT_TARGET" \
+          builtin_freetype=yes \
+          "$lto_option" \
+          use_static_cpp=yes \
+          CCFLAGS="$CCFLAGS" \
+          CC="$GODOT_TOOLCHAIN_ARM_NAME"-gcc \
+          CXX="$GODOT_TOOLCHAIN_ARM_NAME"-g++ \
+          module_denoise_enabled=no module_raycast_enabled=no module_webm_enabled=no module_theora_enabled=no
+          if ! [[ "$?" -eq 0 ]]; then
+            log "ERROR: Something went wrong when compiling Godot." >&2
+            log >&2
+            remove_audio_fix
+            remove_vhacdICHull_fix
+            continue
+          fi
+          log "> Done!"
+
+          cd "$GODOT_SOURCE_FILES_DIR/bin"
+
+          local binary_name
+          if [[ "$USE_LTO" == "yes" ]]; then
+            binary_name="godot_${godot_version}_rpi${rpi_suffix}_${GODOT_TOOLCHAIN_ARM_BITS}_${binary_type}_lto"
+          else
+            binary_name="godot_${godot_version}_rpi${rpi_suffix}_${GODOT_TOOLCHAIN_ARM_BITS}_${binary_type}"
+          fi
+
+          log ">> Moving '$GODOT_BINARY_NAME' to '$GODOT_COMPILED_BINARIES_DIR' ..."
+          log ">> Renaming '$GODOT_BINARY_NAME' to '$binary_name.bin' ..."
+          mv "$GODOT_BINARY_NAME" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+          if ! [[ "$?" -eq 0 ]]; then
+            log "ERROR: Something went wrong when moving or renaming '$GODOT_BINARY_NAME'." >&2
+            log >&2
+            remove_audio_fix
+            remove_vhacdICHull_fix
+            continue
+          fi
+          log "> Done!"
+
+          log ">> Stripping debug symbols for '$binary_name.bin' ..."
+          "$GODOT_TOOLCHAIN_ARM_DIR"/bin/"$GODOT_TOOLCHAIN_ARM_NAME"-strip "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+          if ! [[ "$?" -eq 0 ]]; then
+            log "ERROR: Something went wrong when stripping the debug symbols of '$binary_name.bin'." >&2
+            log >&2
+            remove_audio_fix
+            remove_vhacdICHull_fix
+          else
+            log "> Done!"
+          fi
+
+          # Prepare the binaries of the same Godot version and the same Raspberry Pi version to be packed.
+          if [[ "$PACK" == "yes" ]]; then
+            mv "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin" "$PACK_DIR"
+          # Zip each binary separately.
+          else
+            log ">> Compressing '$binary_name.bin' ..."
+            zip -j "$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip" "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+            if [[ "$?" -eq 0 ]]; then
+              rm "$GODOT_COMPILED_BINARIES_DIR/$binary_name.bin"
+              log "> Done!"
+              log
+              log "You can find it at '$GODOT_COMPILED_BINARIES_DIR/$binary_name.zip'."
+            else
+              log "ERROR: Something went wrong when compressing '$binary_name.bin'." >&2
+              log >&2
+              remove_audio_fix
+              remove_vhacdICHull_fix
+            fi
+          fi
+
           log
-          log "You can find them at '$PACK_DIR.zip'."
+          log "The Godot '$binary_type' ('$godot_version') for the Raspberry Pi '$rpi_version' ('$GODOT_TOOLCHAIN_ARM_BITS bits') was compiled successfully!"
           log
+        done
+
+        # Pack all the binaries of the same Godot version and the same Raspberry Pi version (if the folder is not empty).
+        if [[ "$PACK" == "yes" ]] && [[ "$(ls -A $PACK_DIR)" ]]; then
           log "##################################################"
-        else
-          log "ERROR: Something went wrong when packing the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version'." >&2
+          log
+          log ">> Packing all the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version' ..."
+          zip -j -r "$PACK_DIR.zip" "$PACK_DIR"
+          if [[ "$?" -eq 0 ]]; then
+            rm -rf "$PACK_DIR"
+            log "> Done!"
+            log
+            log "You can find them at '$PACK_DIR.zip'."
+            log
+            log "##################################################"
+          else
+            log "ERROR: Something went wrong when packing the binaries for Godot '$godot_version' and the Raspberry Pi '$rpi_version'." >&2
+          fi
+
+          log
         fi
 
-        log
-      fi
-
-      remove_audio_fix
+        remove_audio_fix
+        remove_vhacdICHull_fix
+      done
     done
   done
 }

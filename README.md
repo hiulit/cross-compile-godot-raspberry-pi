@@ -22,8 +22,10 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 ## Requirements:
 
 - [Godot source files](https://github.com/godotengine/godot) (can be downloaded with this script).
-- [Godot dependecies to compile for Linux](https://docs.godotengine.org/en/stable/development/compiling/compiling_for_x11.html).
-- [Godot toolchain to cross-compile for ARM](https://download.tuxfamily.org/godotengine/toolchains/linux/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2) (can be downloaded with this script).
+- [Godot dependecies to compile for Linux](https://docs.godotengine.org/en/3.6/development/compiling/compiling_for_x11.html).
+- Godot toolchain to cross-compile for ARM (can be downloaded with this script).
+  - [32 bits](https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4/arm-godot-linux-gnueabihf_sdk-buildroot.tar.bz2)
+  - [64 bits](https://github.com/godotengine/buildroot/releases/download/godot-2023.08.x-4/aarch64-godot-linux-gnu_sdk-buildroot.tar.bz2)
 
 ## Dependencies
 - `curl`
@@ -37,7 +39,7 @@ A script to easily cross-compile Godot binaries for the Raspberry Pi from Linux 
 
 The toolchain this script uses has a few limitations at the moment:
 
-- Only supports cross-compilation for `32 bit` binaries and Raspberry Pi verions `3` and `4`.
+- Only supports cross-compilation for Raspberry Pi versions >= `3`.
 - Can't compile Godot `2.x` because it requires `gcc < 6` and the toolchain only has `gcc 10.2`.
 
 ## 🤖 Pre-compiled binaries
@@ -94,21 +96,21 @@ Log files are stored in `logs/`.
   - Default: `./arm-godot-linux-gnueabihf_sdk-buildroot`.
 - `--binaries-dir [path]`: Sets the Godot compiled binaries directory.
   - Default: `./compiled-binaries`.
-- `--godot-versions [version/s]`: Sets the Godot version/s to compile.
-  - Version/s: Use `--get-tags` to see the available versions.
-- `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
-  - Commit/s: SHA-1 hash/es.
-- `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
-  - Version/s: `3 4`.
-- `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
-  - Binary type/s: `editor export-template headless server`.
+- `--godot-versions [version(s)]`: Sets the Godot version(s) to compile.
+  - Version(s): Use `--get-tags` to see the available versions.
+- `--godot-commits [commit(s)]`: Sets the Godot commit(s) to compile.
+  - Commit(s): SHA-1 hashes.
+- `--rpi-versions [version(s)]`: Sets the Raspberry Pi version(s) to compile.
+  - Version(s): `3 4 4 portable`.
+- `--binaries [binary type(s)]`: Sets the different types of Godot binaries to compile.
+  - Binary type(s): `editor export-template headless server`.
 - `--scons-jobs [number|string]`: Sets the jobs (CPUs) to use in SCons.
   - Number: `1-∞`.
   - String: `all` (use all the available CPUs).
   - Default: `1`.
-- `--use-lto`: Enables using Link Time Optimization (LTO) when compiling.
+- `--use-lto`: Enables Link Time Optimization (LTO).
 - `--pack`: Packs all the binaries of the same Godot version and the same Raspberry Pi version.
-- `--auto`: Starts compiling taking the settings in the [config file](#-config-file).
+- `--auto`: Starts compilation using the settings from the [config file](#-config-file).
 
 ## 💁 Examples
 
@@ -184,21 +186,21 @@ godot_toolchain_dir = ""
 # Default: "./compiled-binaries".
 godot_compiled_binaries_dir = ""
 
-# Godot version/s to compile (separated by blank spaces).
+# Godot version(s) to compile (separated by blank spaces).
 # Use "--get-tags" to see the available versions.
-# Version/s must end with the suffix "-stable", except for "master".
+# Version(s) must end with the suffix "-stable", except for "master".
 godot_versions = ""
 
-# Godot commit/s to compile (separated by blank spaces).
-# Commit/s: SHA-1 hash/es.
+# Godot commit(s) to compile (separated by blank spaces).
+# Commit(s): SHA-1 hashes.
 godot_commits = ""
 
-# Raspberry Pi version/s to compile (separated by blank spaces).
-# Version/s: "3 4".
+# Raspberry Pi version(s) to compile (separated by blank spaces).
+# Version(s): "3 4 5 portable".
 raspberry_pi_versions = ""
 
 # Types of Godot binaries to compile (separated by blank spaces).
-# Binary type/s: "editor export-template headless server".
+# Binary type(s): "editor export-template headless server".
 binaries = ""
 
 # Jobs (CPUs) to use in SCons.
@@ -208,7 +210,8 @@ binaries = ""
 scons_jobs = ""
 
 # Use Link Time Optimization (LTO) when compiling.
-# Option: "yes".
+# Option: "yes|no".
+# Default: "no".
 use_lto = ""
 
 # Pack all the binaries of the same Godot version and the same Raspberry Pi version.
@@ -252,14 +255,14 @@ Log files are stored in `logs/`.
   - Default: `~/godot-binaries/` (note the trailing slash!).
 - `--remote-username [username]`: Sets the username of the Raspberry Pi.
 - `--remote-ip [IP]`: Sets the IP of the Raspberry Pi.
-- `--godot-versions [version/s]`: Sets the Godot version/s to compile.
-  - Version/s must end with the suffix `-stable`, except for `master`..
-- `--godot-commits [commit/s]`: Sets the Godot commit/s to compile.
-  - Commit/s: SHA-1 hash/es.
-- `--rpi-versions [version/s]`: Sets the Raspberry Pi version/s to compile.
-  - Version/s: `3 4`.
-- `--binaries [binary type/s]`: Sets the different types of Godot binaries to compile.
-  - Binary type/s: `editor export-template headless server`.
+- `--godot-versions [version(s)]`: Sets the Godot version(s) to compile.
+  - Version(s) must end with the suffix `-stable`, except for `master`..
+- `--godot-commits [commit(s)]`: Sets the Godot commit(s) to compile.
+  - Commit(s): SHA-1 hashes.
+- `--rpi-versions [version(s)]`: Sets the Raspberry Pi version(s) to compile.
+  - Version(s): `3 4 5 portable`.
+- `--binaries [binary type(s)]`: Sets the different types of Godot binaries to compile.
+  - Binary type(s): `editor export-template headless server`.
 - `--auto`: Starts transferring taking the settings in the [config file](#-config-file-1).
 
 ### 💁 Examples
@@ -308,20 +311,20 @@ remote_username = ""
 # IP of the Raspberry Pi
 remote_ip = ""
 
-# Godot version/s to be transfered (separated by blank spaces).
-# Version/s must end with the suffix "-stable", except for "master".
+# Godot version(s) to be transfered (separated by blank spaces).
+# Version(s) must end with the suffix "-stable", except for "master".
 godot_versions = ""
 
-# Godot commit/s to transfer (separated by blank spaces).
-# Commit/s: SHA-1 hash/es.
+# Godot commit(s) to transfer (separated by blank spaces).
+# Commit(s): SHA-1 hashes.
 godot_commits = ""
 
-# Raspberry Pi version/s to transfer (separated by blank spaces).
-# Version/s: "3 4".
+# Raspberry Pi version(s) to transfer (separated by blank spaces).
+# Version(s): "3 4 5 portable".
 raspberry_pi_versions = ""
 
 # Types of Godot binaries to transfer (separated by blank spaces).
-# Binary type/s: "editor export-template headless server".
+# Binary type(s): "editor export-template headless server".
 binaries = ""
 
 # Transfer a pack of all the binaries of the same Godot version and the same Raspberry Pi version
@@ -348,7 +351,6 @@ Feel free to:
 
 - [Open an issue](https://github.com/hiulit/cross-compile-godot-raspberry-pi/issues) if you find a bug.
 - [Create a pull request](https://github.com/hiulit/cross-compile-godot-raspberry-pi/pulls) if you have a new cool feature to add to the project.
-- [Start a new discussion](https://github.com/hiulit/cross-compile-godot-raspberry-pi/discussions) about a feature request.
 
 ## 🙌 Supporting this project
 

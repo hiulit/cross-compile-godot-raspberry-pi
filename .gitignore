@@ -1,4 +1,5 @@
 logs/
 godot/
 arm-godot-linux-gnueabihf_sdk-buildroot/
+aarch64-godot-linux-gnu_sdk-buildroot/
 compiled-binaries/

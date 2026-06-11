@@ -222,8 +222,8 @@ function get_options() {
         REMOTE_IP="$1"
         set_config "remote_ip" "$REMOTE_IP"
         ;;
-#H -gv, --godot-versions [version/s]    Sets the Godot version/s to transfer.
-#H                                        Version/s must end with the suffix "-stable", except for "master".
+#H -gv, --godot-versions [version(s)]    Sets the Godot version(s) to transfer.
+#H                                        Version(s) must end with the suffix "-stable", except for "master".
       -gv|--godot-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -248,8 +248,8 @@ function get_options() {
 
         set_config "godot_versions" "$GODOT_VERSIONS"
         ;;
-#H -gc, --godot-commits [commit/s]      Sets the Godot commit/s to transfer.
-#H                                        Commit/s: SHA-1 hash/es.
+#H -gc, --godot-commits [commit(s)]      Sets the Godot commit(s) to transfer.
+#H                                        Commit(s): SHA-1 hashes.
       -gc|--godot-commits)
         check_argument "$1" "$2" || exit 1
         shift
@@ -258,8 +258,8 @@ function get_options() {
 
         set_config "godot_commits" "$GODOT_COMMITS"
         ;;
-#H -rv, --rpi-versions [version/s]      Sets the Raspberry Pi version/s to transfer.
-#H                                        Version/s: "3 4".
+#H -rv, --rpi-versions [version(s)]      Sets the Raspberry Pi version(s) to transfer.
+#H                                        Version(s): "3 4 5 portable".
       -rv|--rpi-versions)
         check_argument "$1" "$2" || exit 1
         shift
@@ -268,8 +268,8 @@ function get_options() {
 
         set_config "raspberry_pi_versions" "$RASPBERRY_PI_VERSIONS"
         ;;
-#H -b, --binaries [binary type/s]       Sets the different types of Godot binaries to transfer.
-#H                                        Binary type/s: "editor export-template headless server".
+#H -b, --binaries [binary type(s)]       Sets the different types of Godot binaries to transfer.
+#H                                        Binary type(s): "editor export-template headless server".
       -b|--binaries)
         check_argument "$1" "$2" || exit 1
         shift
@@ -314,10 +314,10 @@ function main() {
   log "Raspberry Pi directory: \"$REMOTE_DIR\""
   log "Raspberry Pi username: \"$REMOTE_USERNAME\""
   log "Raspberry Pi IP: \"$REMOTE_IP\""
-  log "Godot version/s to transfer: \"$GODOT_VERSIONS\""
-  log "Godot commit/s to transfer: \"$GODOT_COMMITS\""
+  log "Godot version(s) to transfer: \"$GODOT_VERSIONS\""
+  log "Godot commit(s) to transfer: \"$GODOT_COMMITS\""
   log "Binaries to transfer: \"$BINARIES\""
-  log "Raspberry Pi version/s to transfer: \"$RASPBERRY_PI_VERSIONS\""
+  log "Raspberry Pi version(s) to transfer: \"$RASPBERRY_PI_VERSIONS\""
   log "Pack: \"$PACK\""
   log "----------"
   log
