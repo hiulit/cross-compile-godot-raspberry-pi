@@ -101,7 +101,7 @@ Log files are stored in `logs/`.
 - `--godot-commits [commit(s)]`: Sets the Godot commit(s) to compile.
   - Commit(s): SHA-1 hashes.
 - `--rpi-versions [version(s)]`: Sets the Raspberry Pi version(s) to compile.
-  - Version(s): `3 4 4 portable`.
+  - Version(s): `3 4 5 portable`.
 - `--binaries [binary type(s)]`: Sets the different types of Godot binaries to compile.
   - Binary type(s): `editor export-template headless server`.
 - `--scons-jobs [number|string]`: Sets the jobs (CPUs) to use in SCons.
